@@ -1,0 +1,99 @@
+using RadialBasisOperators
+using StaticArrays
+
+@testset "Constructors" begin
+    phs = PHS()
+    @test phs isa PHS
+    @test phs.n == 3
+    @test phs.deg == 2
+
+    phs = PHS(5; deg=0)
+    @test phs.n == 5
+    @test phs.deg == 0
+
+    @test_throws ArgumentError PHS(2; deg=-1)
+    @test_throws ArgumentError PHS(3; deg=-2)
+end
+
+@testset "PHS, n=1" begin
+    x₁ = SVector(1.0, 2)
+    x₂ = SVector(2.0, 4)
+    phs = PHS(1; deg=-1)
+
+    @testset "Distances" begin
+        @test phs(x₁, x₂) ≈ sqrt((x₁[1] - x₂[1])^2 + (x₁[2] - x₂[2])^2)^1
+    end
+
+    @testset "Derivatives" begin
+        dim = 1
+        ∂rbf = ∂(phs, dim)
+        ∂²rbf = ∂²(phs, dim)
+        ∇rbf = ∇(phs)
+
+        @test ∂rbf(x₁, x₂) ≈ -1 / sqrt(5)
+        @test all(∇rbf(x₁, x₂) .≈ (-1 / sqrt(5), -2 / sqrt(5)))
+        @test ∂²rbf(x₁, x₂) ≈ 4 / (5 * sqrt(5))
+    end
+end
+
+@testset "PHS, n=3" begin
+    x₁ = SVector(1.0, 2)
+    x₂ = SVector(2.0, 4)
+    phs = PHS(3; deg=-1)
+
+    @testset "Distances" begin
+        @test phs(x₁, x₂) ≈ sqrt((x₁[1] - x₂[1])^2 + (x₁[2] - x₂[2])^2)^3
+    end
+
+    @testset "Derivatives" begin
+        dim = 1
+        ∂rbf = ∂(phs, dim)
+        ∂²rbf = ∂²(phs, dim)
+        ∇rbf = ∇(phs)
+
+        @test ∂rbf(x₁, x₂) ≈ -3 * sqrt(5)
+        @test all(∇rbf(x₁, x₂) .≈ (-3 * sqrt(5), -6 * sqrt(5)))
+        @test ∂²rbf(x₁, x₂) ≈ 18 / sqrt(5)
+    end
+end
+
+@testset "PHS, n=5" begin
+    x₁ = SVector(1.0, 2)
+    x₂ = SVector(2.0, 4)
+    phs = PHS(5; deg=-1)
+
+    @testset "Distances" begin
+        @test phs(x₁, x₂) ≈ sqrt((x₁[1] - x₂[1])^2 + (x₁[2] - x₂[2])^2)^5
+    end
+
+    @testset "Derivatives" begin
+        dim = 1
+        ∂rbf = ∂(phs, dim)
+        ∂²rbf = ∂²(phs, dim)
+        ∇rbf = ∇(phs)
+
+        @test ∂rbf(x₁, x₂) ≈ -25 * sqrt(5)
+        @test all(∇rbf(x₁, x₂) .≈ (-25 * sqrt(5), -50 * sqrt(5)))
+        @test ∂²rbf(x₁, x₂) ≈ 40 * sqrt(5)
+    end
+end
+
+@testset "PHS, n=7" begin
+    x₁ = SVector(1.0, 2)
+    x₂ = SVector(2.0, 4)
+    phs = PHS(7; deg=-1)
+    @testset "Distances" begin
+        @test phs(x₁, x₂) ≈ sqrt((x₁[1] - x₂[1])^2 + (x₁[2] - x₂[2])^2)^7
+    end
+
+    @testset "Derivatives" begin
+        dim = 1
+        ∂rbf = ∂(phs, dim)
+        ∂²rbf = ∂²(phs, dim)
+        ∇rbf = ∇(phs)
+
+        @test ∂rbf(x₁, x₂) ≈ -175 * sqrt(5)
+        @test all(∇rbf(x₁, x₂) .≈ (-175 * sqrt(5), -350 * sqrt(5)))
+        @test ∂²rbf(x₁, x₂) ≈ 350 * sqrt(5)
+    end
+end

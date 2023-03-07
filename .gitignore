@@ -1,0 +1,17 @@
+*.jl.*.cov
+*.jl.cov
+*.jl.mem
+/docs/build/
+Manifest.toml
+
+/dev/
+
+#VSCode
+.vscode
+*.code-workspace
+
+# Mac stuff
+.DS_Store
+
+# Flyer et al. script to test
+*.m
