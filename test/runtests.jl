@@ -19,3 +19,11 @@ end
 @safetestset "Laplacian" begin
     include("operators/laplacian.jl")
 end
+
+@safetestset "Stencil" begin
+    include("linalg/stencil.jl")
+end
+
+@safetestset "Utils" begin
+    include("utils.jl")
+end
