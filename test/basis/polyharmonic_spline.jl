@@ -3,22 +3,20 @@ using StaticArrays
 
 @testset "Constructors" begin
     phs = PHS()
-    @test phs isa PHS
-    @test phs.n == 3
-    @test phs.deg == 2
+    @test phs isa PHS3
+    @test phs.poly_deg == 2
 
-    phs = PHS(5; deg=0)
-    @test phs.n == 5
-    @test phs.deg == 0
+    phs = PHS(5; poly_deg=0)
+    @test phs.poly_deg == 0
 
-    @test_throws ArgumentError PHS(2; deg=-1)
-    @test_throws ArgumentError PHS(3; deg=-2)
+    @test_throws ArgumentError PHS(2; poly_deg=-1)
+    @test_throws ArgumentError PHS(3; poly_deg=-2)
 end
 
 @testset "PHS, n=1" begin
     x₁ = SVector(1.0, 2)
     x₂ = SVector(2.0, 4)
-    phs = PHS(1; deg=-1)
+    phs = PHS(1; poly_deg=-1)
 
     @testset "Distances" begin
         @test phs(x₁, x₂) ≈ sqrt((x₁[1] - x₂[1])^2 + (x₁[2] - x₂[2])^2)^1
@@ -39,7 +37,7 @@ end
 @testset "PHS, n=3" begin
     x₁ = SVector(1.0, 2)
     x₂ = SVector(2.0, 4)
-    phs = PHS(3; deg=-1)
+    phs = PHS(3; poly_deg=-1)
 
     @testset "Distances" begin
         @test phs(x₁, x₂) ≈ sqrt((x₁[1] - x₂[1])^2 + (x₁[2] - x₂[2])^2)^3
@@ -60,7 +58,7 @@ end
 @testset "PHS, n=5" begin
     x₁ = SVector(1.0, 2)
     x₂ = SVector(2.0, 4)
-    phs = PHS(5; deg=-1)
+    phs = PHS(5; poly_deg=-1)
 
     @testset "Distances" begin
         @test phs(x₁, x₂) ≈ sqrt((x₁[1] - x₂[1])^2 + (x₁[2] - x₂[2])^2)^5
@@ -81,7 +79,7 @@ end
 @testset "PHS, n=7" begin
     x₁ = SVector(1.0, 2)
     x₂ = SVector(2.0, 4)
-    phs = PHS(7; deg=-1)
+    phs = PHS(7; poly_deg=-1)
     @testset "Distances" begin
         @test phs(x₁, x₂) ≈ sqrt((x₁[1] - x₂[1])^2 + (x₁[2] - x₂[2])^2)^7
     end

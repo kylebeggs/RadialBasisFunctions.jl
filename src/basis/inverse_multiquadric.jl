@@ -2,15 +2,14 @@
 # Inverse Multiquadrics
 struct IMQ{T,D<:Int} <: AbstractRadialBasis
     ε::T
-    deg::D
-    function IMQ(ε::T=1; deg::D=2) where {T,D<:Int}
+    poly_deg::D
+    function IMQ(ε::T=1; poly_deg::D=2) where {T,D<:Int}
         if all(ε .< 0)
             throw(ArgumentError("Shape parameter should be > 0. (ε=$ε)"))
         end
-        deg < -1 && throw(
-            ArgumentError("Augmented polynomial degree must be at least 0 (constant).")
-        )
-        return new{T,D}(ε, deg)
+        poly_deg < -1 &&
+            throw(ArgumentError("Augmented Monomial degree must be at least 0 (constant)."))
+        return new{T,D}(ε, poly_deg)
     end
 end
 
@@ -40,6 +39,16 @@ function ∂²(rbf::IMQ, dim::Int=1)
     end
 end
 
+function ∇²(rbf::IMQ)
+    function ∇²ℒ(x, xᵢ)
+        ε2 = rbf.ε .^ 2
+        ε4 = ε2^2
+        num1 = 3 * ε4 * (x .- xᵢ) .^ 2
+        denom = (ε2 * sqeuclidean(x, xᵢ) + 1)
+        return sum(num1 / denom^2.5 .- ε2 / denom^1.5)
+    end
+end
+
 function franke(x)
     # modified Franke's formula for double precision as initial guess
     D = 2.0 * euclidean(first(x), last(x))
@@ -48,5 +57,11 @@ function franke(x)
 end
 
 function Base.show(io::IO, rbf::IMQ)
-    return print(io, "Inverse Multiquadrics, 1/sqrt((r*ε)²+1) (ε = $(rbf.ε))")
+    print(io, "Inverse Multiquadrics, 1/sqrt((r*ε)²+1)")
+    print(io, "\n└─Shape factor: ε = $(rbf.ε)")
+    if rbf.poly_deg < 0
+        print(io, "\n  No Monomial augmentation")
+    else
+        print(io, "\n└─Polynomial augmentation: degree $(rbf.poly_deg)")
+    end
 end

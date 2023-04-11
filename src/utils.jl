@@ -18,7 +18,7 @@ end
 
 function check_if_deg_odd(deg::Int)
     if isodd(deg)
-        @warn "Polynomial degree is recommended to be even, unless it is -1 which indicates no polynomials. (Flyer, 2016 - https://doi.org/10.1016/j.jcp.2016.05.026)"
+        @warn "Monomial degree is recommended to be even, unless it is -1 which indicates no Monomials. (Flyer, 2016 - https://doi.org/10.1016/j.jcp.2016.05.026)"
     end
 end
 
@@ -28,20 +28,7 @@ end
 See Bayona, 2017 - https://doi.org/10.1016/j.jcp.2016.12.008
 """
 function autoselect_k(data::Vector, basis::B) where {B<:AbstractRadialBasis}
-    m = basis.deg
+    m = basis.poly_deg
     d = length(first(data))
     return min(length(data), max(2 * binomial(m + d, d), 2 * d + 1))
-end
-
-function find_scales(data::Vector, adjl::Vector{<:AbstractVector})
-    scales = map(adjl) do adj
-        stencil = @view data[adj]
-        cur_max = typemin(eltype(eltype((stencil))))
-        for i in eachindex(stencil), j in eachindex(stencil)
-            dist = euclidean(stencil[i], stencil[j])
-            dist > cur_max && (cur_max = dist)
-        end
-        return cur_max
-    end
-    return scales
 end

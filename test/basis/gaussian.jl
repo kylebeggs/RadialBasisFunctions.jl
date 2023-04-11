@@ -5,19 +5,19 @@ using StaticArrays
     g = Gaussian()
     @test g isa Gaussian
     @test g.ε == 1
-    @test g.deg == 2
+    @test g.poly_deg == 2
 
-    g = Gaussian(5.0; deg=0)
+    g = Gaussian(5.0; poly_deg=0)
     @test g.ε ≈ 5
-    @test g.deg == 0
+    @test g.poly_deg == 0
 
     @test_throws ArgumentError Gaussian(-1)
-    @test_throws ArgumentError Gaussian(; deg=-2)
+    @test_throws ArgumentError Gaussian(; poly_deg=-2)
 end
 
 x₁ = SVector(1.0, 2)
 x₂ = SVector(2.0, 4)
-g = Gaussian(2; deg=-1)
+g = Gaussian(2; poly_deg=-1)
 
 @testset "Distances" begin
     r = sqrt((x₁[1] - x₂[1])^2 + (x₁[2] - x₂[2])^2)

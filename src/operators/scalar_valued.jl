@@ -1,91 +1,56 @@
-struct Partial{S<:AbstractMatrix,V<:AbstractVector,T<:Int,B<:AbstractRadialBasis} <:
-       ScalarValuedOperator
-    ℒ::Function
-    order::Int
-    dim::Int
-    weights::S
-    data::Vector{V}
-    adjl::Vector{Vector{T}}
-    basis::B
-    scales::Any
+abstract type ScalarValuedOperator <: AbstractRadialBasisOperator end
+
+"""
+    Partial <: ScalarValuedOperator
+
+Builds an operator for a first order partial derivative.
+"""
+struct Partial{L<:Function,T<:Int} <: ScalarValuedOperator
+    ℒ::L
+    order::T
+    dim::T
 end
 
-function Partial(
-    ℒ::Function,
-    order::Int,
-    data::Vector,
-    dim::Int,
-    basis::B=PHS(3, 1);
-    k::Int=autoselect_k(data, basis),
-) where {B<:AbstractRadialBasis}
-    adjl = find_neighbors(data, k)
-    scales = find_scales(data, adjl)
-    weights = build_weightmx(ℒ, data, adjl, basis, scales)
-    return Partial(ℒ, order, dim, weights, data, adjl, basis, scales)
-end
-
-function Partial(
-    data::Vector, dim::Int, basis::B=PHS(3, 2); k::Int=autoselect_k(data, basis)
-) where {B<:AbstractRadialBasis}
-    ∂ℒ(x) = ∂(x, dim)
-    return Partial(∂ℒ, 1, data, dim, basis; k=k)
-end
-
-function Partial²(
-    data::Vector, dim::Int, basis::B=PHS(3, 2); k::Int=autoselect_k(data, basis)
-) where {B<:AbstractRadialBasis}
-    ∂²ℒ(x) = ∂²(x, dim)
-    return Partial(∂²ℒ, 2, data, dim, basis; k=k)
-end
-
-struct Laplacian{S<:AbstractMatrix,V,T<:Int,B<:AbstractRadialBasis} <: ScalarValuedOperator
-    weights::S
-    data::Vector{V}
-    adjl::Vector{Vector{T}}
-    basis::B
-end
-
-function Laplacian(
-    data::Vector, basis::B=PHS(3, 2); k::Int=autoselect_k(data, basis)
-) where {B<:AbstractRadialBasis}
-    adjl = find_neighbors(data, k)
-    n = length(data)
-    weights = spzeros(n, n)
-    for dim in eachindex(first(data))
-        weights += build_weightmx(x -> ∂²(x, dim), data, adjl, basis)
+# convienience constructors
+function partial(
+    data::AbstractVector{D},
+    order::T,
+    dim::T,
+    basis::B=PHS(3; poly_deg=2);
+    k::T=autoselect_k(data, basis),
+) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+    f = let o = Val{order}, dim = dim
+        x -> ∂(x, o, dim)
     end
-    return Laplacian(weights, data, adjl, basis)
+    ℒ = Partial(f, order, dim)
+    adjl = find_neighbors(data, k)
+    N = length(data)
+    weights = spzeros(N, N)
+    return RadialBasisOperator(ℒ, weights, data, adjl, basis)
 end
 
-# evaluate
-(op::ScalarValuedOperator)(x::AbstractVecOrMat) = op.weights * x
-(op::ScalarValuedOperator)(x::AbstractVector{<:AbstractVector}) = (op.weights,) .* x
-function LinearAlgebra.mul!(
-    y::AbstractVecOrMat, op::ScalarValuedOperator, x::AbstractVecOrMat
-)
-    return mul!(y, op.weights, x)
+"""
+    Laplacian <: ScalarValuedOperator
+
+Builds an operator for the sum of the second derivatives w.r.t. each independent variable.
+"""
+struct Laplacian{L<:Function} <: ScalarValuedOperator
+    ℒ::L
 end
-function LinearAlgebra.mul!(
-    y::AbstractVecOrMat, op::ScalarValuedOperator, x::AbstractVecOrMat, α, β
-)
-    return mul!(y, op.weights, x, α, β)
+
+# convienience constructors
+function laplacian(
+    data::AbstractVector{D}, basis::B=PHS(3; poly_deg=2); k::T=autoselect_k(data, basis)
+) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+    ℒ = Laplacian(∇²)
+    adjl = find_neighbors(data, k)
+    N = length(data)
+    weights = spzeros(N, N)
+    return RadialBasisOperator(ℒ, weights, data, adjl, basis)
 end
+
+(op::ScalarValuedOperator)(x) = op.ℒ(x)
 
 # pretty printing
-function Base.show(io::IO, op::Partial)
-    println(io, "∂ⁿ/∂xᵢ (n = $(op.order), i = $(op.dim))")
-    println(io, "  Data type: ", typeof(first(op.data)))
-    println(io, "  Number of points: ", length(op.data))
-    println(io, "  Dimensions: ", length(first(op.data)))
-    println(io, "  Stencil size: ", length(first(op.adjl)))
-    return println(io, "  Basis: ", op.basis, " with degree $(op.basis.deg) polynomial")
-end
-
-function Base.show(io::IO, op::Laplacian)
-    println(io, "Laplacian, ∇²")
-    println(io, "  Data type: ", typeof(first(op.data)))
-    println(io, "  Number of points: ", length(op.data))
-    println(io, "  Dimensions: ", length(first(op.data)))
-    println(io, "  Stencil size: ", length(first(op.adjl)))
-    return println(io, "  Basis: ", op.basis, " with degree $(op.basis.deg) polynomial")
-end
+print_op(op::Partial) = "∂ⁿ/∂xᵢ (n = $(op.order), i = $(op.dim))"
+print_op(op::Laplacian) = "Laplacian (∇² or Δ)"

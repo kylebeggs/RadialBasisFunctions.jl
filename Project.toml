@@ -4,8 +4,11 @@ authors = ["Kyle Beggs"]
 version = "0.1.0"
 
 [deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
+Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
+FastClosures = "9aa1b823-49e4-5ca5-8b0f-3971ec8bab6a"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 LoopVectorization = "bdcacae8-1622-11e9-2a5c-532679323890"
@@ -13,8 +16,9 @@ NearestNeighbors = "b8a86587-4115-5ab1-83bc-aa920d37bbce"
 SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+StaticPolynomials = "62e018b1-6e46-5407-a5a7-97d4fbcae734"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
+StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
 
 [compat]
 julia = "1.6"

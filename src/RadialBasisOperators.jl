@@ -8,33 +8,43 @@ using StaticArrays
 using Statistics
 using Distances
 using ForwardDiff
+using StructArrays
+using Enzyme
 using Combinatorics
-using Transducers
+using FastClosures
 
 abstract type AbstractRadialBasisOperator end
-abstract type VectorValuedOperator <: AbstractRadialBasisOperator end
-abstract type ScalarValuedOperator <: AbstractRadialBasisOperator end
 
 include("basis/basis.jl")
 include("utils.jl")
-include("linalg/linalg.jl")
+include("linalg/stencil.jl")
 include("operators/operators.jl")
 include("interpolation.jl")
 
-#export GenericRadialBasisOperator
+export RadialBasisOperator
 
 # Scalar valued
-export Partial, Partial², Laplacian
+export Partial, partial
+export Laplacian, laplacian
 
 # Vector valued
-export Gradient, Hessian
+export Gradient, gradient
+
+# interpolation
+export RBFInterp
 
 # Basis
 export AbstractRadialBasis
-export IMQ, PHS, Gaussian, polynomial_basis, ∂, ∂², ∇, ∇², find_neighbors
-export PolynomialBasis
+export AbstractPHS, PHS, PHS1, PHS3, PHS5, PHS7
+export IMQ
+export Gaussian
+export MonomialBasis
+export ∂, ∂², ∇, ∇²
 
-export build_weightmx, compute_stencil_weights
-export RBFInterp, find_scales
+# utility functions
+export find_neighbors
+
+# linear algebra
+export _build_weightmx, _build_collocation_matrix!, _build_rhs!, _build_stencil!
 
 end

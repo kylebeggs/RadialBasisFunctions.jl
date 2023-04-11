@@ -11,3 +11,11 @@ end
 @safetestset "Inverse Multiquadric" begin
     include("basis/inverse_multiquadric.jl")
 end
+
+@safetestset "Partial Derivatives" begin
+    include("operators/partial.jl")
+end
+
+@safetestset "Laplacian" begin
+    include("operators/laplacian.jl")
+end

@@ -5,19 +5,19 @@ using StaticArrays
     imq = IMQ()
     @test imq isa IMQ
     @test imq.ε == 1
-    @test imq.deg == 2
+    @test imq.poly_deg == 2
 
-    imq = IMQ(5.0; deg=0)
+    imq = IMQ(5.0; poly_deg=0)
     @test imq.ε ≈ 5
-    @test imq.deg == 0
+    @test imq.poly_deg == 0
 
     @test_throws ArgumentError IMQ(-1)
-    @test_throws ArgumentError IMQ(; deg=-2)
+    @test_throws ArgumentError IMQ(; poly_deg=-2)
 end
 
 x₁ = SVector(1.0, 2)
 x₂ = SVector(2.0, 4)
-imq = IMQ(2; deg=-1)
+imq = IMQ(2; poly_deg=-1)
 
 @testset "Distances" begin
     r = sqrt((x₁[1] - x₂[1])^2 + (x₁[2] - x₂[2])^2)
