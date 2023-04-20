@@ -25,15 +25,12 @@ end
 ∇(::PHS1) = ∇ℒ(x, xᵢ) = (x .- xᵢ) / euclidean(x, xᵢ)
 function ∂²(::PHS1, dim::Int)
     function ∂²ℒ(x, xᵢ)
-        return (-(x[dim] - xᵢ[dim])^2 + sqeuclidean(x, xᵢ)) /
-               (sqeuclidean(x, xᵢ)^1.5 + 1e-8)
+        return (-(x[dim] - xᵢ[dim])^2 + sqeuclidean(x, xᵢ)) / (euclidean(x, xᵢ)^3 + 1e-8)
     end
 end
 function ∇²(::PHS1)
     function ∇²ℒ(x, xᵢ)
-        return sum(
-            (-(x .- xᵢ) .^ 2 .+ sqeuclidean(x, xᵢ)) / (sqeuclidean(x, xᵢ)^1.5 + 1e-8)
-        )
+        return sum((-(x .- xᵢ) .^ 2 .+ sqeuclidean(x, xᵢ)) / (euclidean(x, xᵢ)^3 + 1e-8))
     end
 end
 
@@ -62,8 +59,8 @@ struct PHS5{D<:Int} <: AbstractPHS
 end
 
 (phs::PHS5)(x, xᵢ) = euclidean(x, xᵢ)^5
-∂(::PHS5, dim::Int) = ∂ℒ(x, xᵢ) = 5 * (x[dim] - xᵢ[dim]) * sqeuclidean(x, xᵢ)^1.5
-∇(::PHS5) = ∇ℒ(x, xᵢ) = 5 * (x .- xᵢ) * sqeuclidean(x, xᵢ)^1.5
+∂(::PHS5, dim::Int) = ∂ℒ(x, xᵢ) = 5 * (x[dim] - xᵢ[dim]) * euclidean(x, xᵢ)^3
+∇(::PHS5) = ∇ℒ(x, xᵢ) = 5 * (x .- xᵢ) * euclidean(x, xᵢ)^3
 function ∂²(::PHS5, dim::Int)
     return function ∂²ℒ(x, xᵢ)
         return 5 * euclidean(x, xᵢ) * (3 * (x[dim] - xᵢ[dim])^2 + sqeuclidean(x, xᵢ))
@@ -81,16 +78,16 @@ struct PHS7{D<:Int} <: AbstractPHS
 end
 
 (phs::PHS7)(x, xᵢ) = euclidean(x, xᵢ)^7
-∂(::PHS7, dim::Int) = ∂ℒ(x, xᵢ) = 7 * (x[dim] - xᵢ[dim]) * sqeuclidean(x, xᵢ)^2.5
-∇(::PHS7) = ∇ℒ(x, xᵢ) = 7 * (x .- xᵢ) * sqeuclidean(x, xᵢ)^2.5
+∂(::PHS7, dim::Int) = ∂ℒ(x, xᵢ) = 7 * (x[dim] - xᵢ[dim]) * euclidean(x, xᵢ)^5
+∇(::PHS7) = ∇ℒ(x, xᵢ) = 7 * (x .- xᵢ) * euclidean(x, xᵢ)^5
 function ∂²(::PHS7, dim::Int)
     function ∂²ℒ(x, xᵢ)
-        return 7 * sqeuclidean(x, xᵢ)^1.5 * (5 * (x[dim] - xᵢ[dim])^2 + sqeuclidean(x, xᵢ))
+        return 7 * euclidean(x, xᵢ)^3 * (5 * (x[dim] - xᵢ[dim])^2 + sqeuclidean(x, xᵢ))
     end
 end
 function ∇²(::PHS7)
     function ∇²ℒ(x, xᵢ)
-        return sum(7 * sqeuclidean(x, xᵢ)^1.5 * (5 * (x .- xᵢ) .^ 2 .+ sqeuclidean(x, xᵢ)))
+        return sum(7 * euclidean(x, xᵢ)^3 * (5 * (x .- xᵢ) .^ 2 .+ sqeuclidean(x, xᵢ)))
     end
 end
 

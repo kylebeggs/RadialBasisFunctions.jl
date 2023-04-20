@@ -11,117 +11,138 @@ struct MonomialBasis{T<:Int,B<:Function}
     basis::B
     function MonomialBasis(n::T, deg::T) where {T<:Int}
         if n <= 3 && deg <= 2
-            basis = m_basis(Val{n}, Val{deg})
+            basis = build_monomial_basis(Val{n}(), Val{deg}())
         else
-            basis = m_basis(n, deg)
+            basis = build_monomial_basis(n, deg)
         end
+        #basis = build_monomial_basis(n, deg)
         return new{T,typeof(basis)}(n, deg, basis)
     end
 end
 
-(m::MonomialBasis)(x) = m.basis(x)
-
-∂(m::MonomialBasis, dim::Int) = ∂ℒ(x) = ForwardDiff.jacobian(m, x)[:, dim]
-∇(m::MonomialBasis) = ∇ℒ(x) = ForwardDiff.jacobian(m, x)
-∂²(m::MonomialBasis, dim::Int) = ∂²ℒ(x) = ForwardDiff.jacobian(∂(m, dim), x)[:, dim]
-function ∇²(m::MonomialBasis)
-    return function ∇²ℒ(x)
-        return sum([ForwardDiff.jacobian(∂(m, dim), x)[:, dim] for dim in eachindex(x)])
-    end
+function (m::MonomialBasis)(x::AbstractVector{T}) where {T}
+    b = ones(T, binomial(m.n + m.deg, m.n))
+    m.basis(b, x)
+    return b
 end
+(m::MonomialBasis)(b, x) = m.basis(b, x)
 
 function Base.show(io::IO, pb::MonomialBasis)
     return print(io, "MonomialBasis, deg=$(pb.deg) in $(pb.n) dimensions")
 end
 
-function m_basis(n::T, deg::T) where {T<:Int}
+function build_monomial_basis(n::T, deg::T) where {T<:Int}
     e = multiexponents(n + 1, deg)
     e = map(i -> getindex.(e, i), 1:n)
-    idxs = map(j -> map(i -> findall(x -> x >= i, e[j]) .+ 1, 1:deg), 1:n)
-    function basis(x::T) where {T}
-        b = ones(eltype(T), binomial(n + deg, n))
+    ids = map(j -> map(i -> findall(x -> x >= i, e[j]), 1:deg), 1:n)
+    return build_monomial_basis(ids)
+end
+
+function build_monomial_basis(ids::Vector{Vector{Vector{T}}}) where {T<:Int}
+    function basis(b::AbstractVector, x::AbstractVector{T}) where {T}
         # TODO flatten loop
-        @inbounds for i in eachindex(idxs), k in eachindex(idxs[i])
-            b[idxs[i][k]] *= x[i]
+        @views @inbounds for i in eachindex(ids), k in eachindex(ids[i])
+            b[ids[i][k]] *= x[i]
         end
         return b
     end
     return basis
 end
 
-function m_basis(::Any, ::Type{Val{0}})
-    return basis(::AbstractVector{T}) where {T} = one(T)
-end
-
-function m_basis(::Type{Val{1}}, ::Type{Val{1}})
-    function basis(x::AbstractVector{T}) where {T}
-        return SVector{2,T}(one(T), x[1])
+function build_monomial_basis(::Any, ::Val{0})
+    function basis(b::AbstractVector, ::AbstractVector{T}) where {T}
+        b[begin] = one(T)
+        return nothing
     end
     return basis
 end
 
-function m_basis(::Type{Val{1}}, ::Type{Val{2}})
-    function basis(x::AbstractVector{T}) where {T}
-        return SVector{3,T}(one(T), x[1], x[1]^2)
+function build_monomial_basis(::Val{1}, ::Val{1})
+    function basis(b::AbstractVector, x::AbstractVector{T}) where {T}
+        b[begin] = one(T)
+        b[begin + 1] = x[1]
+        return nothing
     end
     return basis
 end
 
-function m_basis(::Type{Val{2}}, ::Type{Val{1}})
-    function basis(x::AbstractVector{T}) where {T}
-        return SVector{3,T}(one(T), x[1], x[2])
+function build_monomial_basis(::Val{1}, ::Val{2})
+    function basis(b::AbstractVector, x::AbstractVector{T}) where {T}
+        b[begin] = one(T)
+        b[begin + 1] = x[1]
+        b[begin + 2] = x[1]^2
+        return nothing
     end
     return basis
 end
 
-function m_basis(::Type{Val{2}}, ::Type{Val{2}})
-    function basis(x::AbstractVector{T}) where {T}
-        return SVector{6,T}(one(T), x[1], x[2], x[1]^2, x[2]^2, x[1] * x[2])
+function build_monomial_basis(::Val{2}, ::Val{1})
+    function basis(b::AbstractVector, x::AbstractVector{T}) where {T}
+        b[begin] = one(T)
+        b[begin + 1] = x[1]
+        b[begin + 2] = x[2]
+        return nothing
     end
     return basis
 end
 
-function m_basis(::Type{Val{3}}, ::Type{Val{1}})
-    function basis(x::AbstractVector{T}) where {T}
-        return SVector{4,T}(one(T), x[1], x[2], x[3])
+function build_monomial_basis(::Val{2}, ::Val{2})
+    function basis(b::AbstractVector, x::AbstractVector{T}) where {T}
+        b[begin] = one(T)
+        b[begin + 1] = x[1]
+        b[begin + 2] = x[2]
+        b[begin + 3] = x[1]^2
+        b[begin + 4] = x[2]^2
+        b[begin + 5] = x[1] * x[2]
+        return nothing
     end
     return basis
 end
 
-function m_basis(::Type{Val{3}}, ::Type{Val{2}})
-    function basis(x::AbstractVector{T}) where {T}
-        return SVector{10,T}(
-            one(T),
-            x[1],
-            x[2],
-            x[3],
-            x[1]^2,
-            x[2]^2,
-            x[3]^2,
-            x[1] * x[2],
-            x[2] * x[3],
-            x[1] * x[3],
-        )
+function build_monomial_basis(::Val{3}, ::Val{1})
+    function basis(b::AbstractVector, x::AbstractVector{T}) where {T}
+        b[begin] = one(T)
+        b[begin + 1] = x[1]
+        b[begin + 2] = x[2]
+        b[begin + 3] = x[3]
+        return nothing
+    end
+    return basis
+end
+
+function build_monomial_basis(::Val{3}, ::Val{2})
+    function basis(b::AbstractVector, x::AbstractVector{T}) where {T}
+        b[begin] = one(T)
+        b[begin + 1] = x[1]
+        b[begin + 2] = x[2]
+        b[begin + 3] = x[3]
+        b[begin + 4] = x[1]^2
+        b[begin + 5] = x[2]^2
+        b[begin + 6] = x[3]^2
+        b[begin + 7] = x[1] * x[2]
+        b[begin + 8] = x[1] * x[3]
+        b[begin + 9] = x[2] * x[3]
+        return nothing
     end
     return basis
 end
 
 function pascals_triangle(x::T, d::N) where {T,N<:Int}
     n = length(x)
-    c = ones(eltype(T), binomial(n + d, n))
+    b = ones(eltype(T), binomial(n + d, n))
     offset = 0
     for line in 1:(d + 1)
         for k in 1:(line - 1)
             for i in 1:k
-                c[i + offset] *= x[1]
+                b[i + offset] *= x[1]
             end
             for i in (line - k + 1):line
-                c[i + offset] *= x[2]
+                b[i + offset] *= x[2]
             end
         end
         offset += line
     end
-    return c
+    return b
 end
 
 function pascals_tetrahedral(x::T, d::N) where {T,N<:Int}

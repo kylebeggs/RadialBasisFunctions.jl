@@ -32,3 +32,15 @@ function autoselect_k(data::Vector, basis::B) where {B<:AbstractRadialBasis}
     d = length(first(data))
     return min(length(data), max(2 * binomial(m + d, d), 2 * d + 1))
 end
+
+function reorder_points!(
+    x::AbstractVector{D}, adjl::Vector{Vector{T}}, k::T
+) where {D,T<:Int}
+    i = symrcm(adjl, ones(T, length(x)) .* k)
+    permute!(x, i)
+    return nothing
+end
+
+function reorder_points!(x::AbstractVector{D}, k::T) where {D,T<:Int}
+    return reorder_points!(x, find_neighbors(x, k), k)
+end

@@ -12,9 +12,9 @@ struct RadialBasisOperator{L,W<:AbstractMatrix,D,A,B<:AbstractRadialBasis} <:
     basis::B
     valid_cache::Base.RefValue{Bool}
     function RadialBasisOperator(
-        ℒ::L, weights::W, data::D, adjl::A, basis::B
-    ) where {L,W<:AbstractMatrix,D,A,B<:AbstractRadialBasis}
-        return new{L,W,D,A,B}(ℒ, weights, data, adjl, basis, Ref(false))
+        ℒ, weights::W, data::D, adjl::A, basis::B
+    ) where {W<:AbstractMatrix,D,A,B<:AbstractRadialBasis}
+        return new{typeof(ℒ),W,D,A,B}(ℒ, weights, data, adjl, basis, Ref(false))
     end
 end
 

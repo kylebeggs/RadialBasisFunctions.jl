@@ -15,27 +15,27 @@ end
 
 (rbf::IMQ)(x, xᵢ) = 1 / sqrt((euclidean(x, xᵢ) * rbf.ε)^2 + 1)
 
-function ∂(rbf::IMQ, dim::Int=1)
+function ∂(rbf::IMQ, ::Val{1}, dim::Int=1)
     function ∂ℒ(x, xᵢ)
         ε2 = rbf.ε .^ 2
-        return (xᵢ[dim] - x[dim]) .* (ε2 / (ε2 * sqeuclidean(x, xᵢ) + 1)^1.5)
+        return (xᵢ[dim] - x[dim]) .* (ε2 / sqrt((ε2 * sqeuclidean(x, xᵢ) + 1)^3))
     end
 end
 
 function ∇(rbf::IMQ)
     function ∇ℒ(x, xᵢ)
         ε2 = rbf.ε .^ 2
-        return (xᵢ - x) .* (ε2 / (ε2 * sqeuclidean(x, xᵢ) + 1)^1.5)
+        return (xᵢ - x) .* (ε2 / sqrt((ε2 * sqeuclidean(x, xᵢ) + 1)^3))
     end
 end
 
-function ∂²(rbf::IMQ, dim::Int=1)
+function ∂(rbf::IMQ, ::Val{2}, dim::Int=1)
     function ∂²ℒ(x, xᵢ)
         ε2 = rbf.ε .^ 2
         ε4 = ε2^2
         num1 = 3 * ε4 * (x[dim] - xᵢ[dim])^2
         denom = (ε2 * sqeuclidean(x, xᵢ) + 1)
-        return num1 / denom^2.5 - ε2 / denom^1.5
+        return num1 / sqrt(denom^5) - ε2 / sqrt(denom^3)
     end
 end
 
@@ -45,7 +45,7 @@ function ∇²(rbf::IMQ)
         ε4 = ε2^2
         num1 = 3 * ε4 * (x .- xᵢ) .^ 2
         denom = (ε2 * sqeuclidean(x, xᵢ) + 1)
-        return sum(num1 / denom^2.5 .- ε2 / denom^1.5)
+        return sum(num1 / sqrt(denom^5) .- ε2 / sqrt(denom^3))
     end
 end
 

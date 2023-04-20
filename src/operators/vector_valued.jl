@@ -9,7 +9,8 @@ function gradient(
 ) where {T<:Int,B<:AbstractRadialBasis}
     adjl = find_neighbors(data, k)
     weights = ntuple(
-        dim -> _build_weightmx(x -> ∂(x, dim), data, adjl, basis), length(first(data))
+        dim -> _build_weightmx(x -> ∂(x, Val{1}(), dim), data, adjl, basis),
+        length(first(data)),
     )
     return RadialBasisOperator(ℒ, weights, data, adjl, basis)
 end

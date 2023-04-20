@@ -19,14 +19,11 @@ function partial(
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
-    f = let o = Val{order}, dim = dim
+    f = let o = Val{order}(), dim = dim
         x -> ∂(x, o, dim)
     end
     ℒ = Partial(f, order, dim)
-    adjl = find_neighbors(data, k)
-    N = length(data)
-    weights = spzeros(N, N)
-    return RadialBasisOperator(ℒ, weights, data, adjl, basis)
+    return RadialBasisOperator(ℒ, data, basis; k=k)
 end
 
 """
@@ -43,10 +40,7 @@ function laplacian(
     data::AbstractVector{D}, basis::B=PHS(3; poly_deg=2); k::T=autoselect_k(data, basis)
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
     ℒ = Laplacian(∇²)
-    adjl = find_neighbors(data, k)
-    N = length(data)
-    weights = spzeros(N, N)
-    return RadialBasisOperator(ℒ, weights, data, adjl, basis)
+    return RadialBasisOperator(ℒ, data, basis; k=k)
 end
 
 (op::ScalarValuedOperator)(x) = op.ℒ(x)
