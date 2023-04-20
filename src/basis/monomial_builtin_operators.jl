@@ -30,8 +30,6 @@ function ∂(m::MonomialBasis, order::T, dim::T) where {T<:Int}
     return build_monomial_basis(m.n, m.deg, ids, c)
 end
 
-∂(m::MonomialBasis, ::Val{1}, dim::T) where {T<:Int} = ∂(m, 1, dim)
-
 function ∇(m::MonomialBasis, dim::T) where {T<:Int}
     e = multiexponents(m.n + 1, m.deg)
     e = map(i -> getindex.(e, i), 1:(m.n))

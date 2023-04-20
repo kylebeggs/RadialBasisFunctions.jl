@@ -12,8 +12,8 @@ include("monomial_builtin_operators.jl")
 function ∂(basis::B, order::T, dim::T) where {T<:Int,B<:AbstractRadialBasis}
     return ∂(basis, Val{order}(), dim)
 end
-∂(basis::B, ::Type{Val{1}}, dim::T) where {T<:Int,B} = ∂(basis, dim)
-∂(basis::B, ::Type{Val{2}}, dim::T) where {T<:Int,B} = ∂²(basis, dim)
+∂(basis::B, dim::T) where {T<:Int,B} = ∂(basis, Val{1}(), dim)
+∂²(basis::B, dim::T) where {T<:Int,B} = ∂(basis, Val{2}(), dim)
 
 # pretty printing
 unicode_order(::Val{1}) = ""

@@ -44,3 +44,10 @@ end
 function reorder_points!(x::AbstractVector{D}, k::T) where {D,T<:Int}
     return reorder_points!(x, find_neighbors(x, k), k)
 end
+
+function check_poly_deg(poly_deg)
+    if poly_deg < -1
+        throw(ArgumentError("Augmented Monomial degree must be at least 0 (constant)."))
+    end
+    return nothing
+end

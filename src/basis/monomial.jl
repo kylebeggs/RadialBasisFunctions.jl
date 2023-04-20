@@ -1,5 +1,5 @@
 """
-    struct MonomialBasis{N<:Int,D<:Int,B}
+    struct MonomialBasis{T<:Int,B<:Function}
 
 Multivariate Monomial basis.
 n ∈ N: length of array, i.e., x ∈ Rⁿ
