@@ -50,6 +50,6 @@ export find_neighbors, reorder_points!
 export _build_weightmx, _build_collocation_matrix!, _build_rhs!, _build_stencil!
 
 #test
-export ∂test, build_monomial_basis, pascals_triangle
+export ∂test, ∂exponents!, build_monomial_basis, pascals_triangle
 
 end
