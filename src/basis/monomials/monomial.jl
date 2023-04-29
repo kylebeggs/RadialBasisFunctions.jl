@@ -15,7 +15,6 @@ struct MonomialBasis{T<:Int,B<:Function}
         else
             basis = build_monomial_basis(n, deg)
         end
-        #basis = build_monomial_basis(n, deg)
         return new{T,typeof(basis)}(n, deg, basis)
     end
 end
@@ -40,11 +39,11 @@ end
 
 function build_monomial_basis(ids::Vector{Vector{Vector{T}}}) where {T<:Int}
     function basis(b::AbstractVector, x::AbstractVector{T}) where {T}
-        # TODO flatten loop
+        # TODO flatten loop - why does it allocate here
         @views @inbounds for i in eachindex(ids), k in eachindex(ids[i])
             b[ids[i][k]] *= x[i]
         end
-        return b
+        return nothing
     end
     return basis
 end
@@ -127,22 +126,24 @@ function build_monomial_basis(::Val{3}, ::Val{2})
     return basis
 end
 
-function pascals_triangle(x::T, d::N) where {T,N<:Int}
-    n = length(x)
-    b = ones(eltype(T), binomial(n + d, n))
-    offset = 0
-    for line in 1:(d + 1)
-        for k in 1:(line - 1)
-            for i in 1:k
-                b[i + offset] *= x[1]
+function build_monomial_basis(::Val{2}, deg::T) where {T<:Int}
+    # pascals triangle
+    function basis(b::AbstractVector, x::AbstractVector{T}) where {T}
+        offset = 0
+        for line in 1:(d + 1)
+            for k in 1:(line - 1)
+                for i in 1:k
+                    b[i + offset] *= x[1]
+                end
+                for i in (line - k + 1):line
+                    b[i + offset] *= x[2]
+                end
             end
-            for i in (line - k + 1):line
-                b[i + offset] *= x[2]
-            end
+            offset += line
         end
-        offset += line
+        return nothing
     end
-    return b
+    return basis
 end
 
 function pascals_tetrahedral(x::T, d::N) where {T,N<:Int}

@@ -13,7 +13,6 @@ using Enzyme
 using StructArrays
 using Enzyme
 using Combinatorics
-using FastClosures
 
 abstract type AbstractRadialBasisOperator end
 
@@ -23,6 +22,7 @@ include("linalg/stencil.jl")
 include("operators/operators.jl")
 include("interpolation.jl")
 
+# operators
 export RadialBasisOperator
 
 # Scalar valued
@@ -33,9 +33,9 @@ export Laplacian, laplacian
 export Gradient, gradient
 
 # interpolation
-export RBFInterp
+export RadialBasisInterp
 
-# Basis
+# bases
 export AbstractRadialBasis
 export AbstractPHS, PHS, PHS1, PHS3, PHS5, PHS7
 export IMQ
@@ -50,6 +50,6 @@ export find_neighbors, reorder_points!
 export _build_weightmx, _build_collocation_matrix!, _build_rhs!, _build_stencil!
 
 #test
-export ∂test, ∂exponents!, build_monomial_basis, pascals_triangle
+export ∂test, ∂exponents, build_monomial_basis, pascals_triangle, monomial_recursive_list
 
 end

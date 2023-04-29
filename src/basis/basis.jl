@@ -6,8 +6,8 @@ abstract type AbstractRadialBasis end
 include("polyharmonic_spline.jl")
 include("inverse_multiquadric.jl")
 include("gaussian.jl")
-include("monomial.jl")
-include("monomial_builtin_operators.jl")
+include("monomials/monomial.jl")
+include("monomials/monomial_builtin_operators.jl")
 
 function ∂(basis::B, order::T, dim::T) where {T<:Int,B<:AbstractRadialBasis}
     return ∂(basis, Val{order}(), dim)

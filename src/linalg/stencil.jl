@@ -82,7 +82,7 @@ function _build_rhs!(
 
     # monomial augmentation
     if basis.poly_deg > -1
-        b[(k + 1):end] = ℒmon(first(data))
+        ℒmon(b[(k + 1):end], first(data))
     end
 
     return nothing
