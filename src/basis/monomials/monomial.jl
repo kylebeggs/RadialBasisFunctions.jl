@@ -10,12 +10,11 @@ struct MonomialBasis{T<:Int,B<:Function}
     deg::T
     basis::B
     function MonomialBasis(n::T, deg::T) where {T<:Int}
-        #if n <= 3 && deg <= 2
-        #    basis = build_monomial_basis(Val{n}(), Val{deg}())
-        #else
-        #    basis = build_monomial_basis(n, deg)
-        #end
-        basis = build_monomial_basis(n, deg)
+        if n <= 3 && deg <= 2
+            basis = build_monomial_basis(Val{n}(), Val{deg}())
+        else
+            basis = build_monomial_basis(n, deg)
+        end
         return new{T,typeof(basis)}(n, deg, basis)
     end
 end

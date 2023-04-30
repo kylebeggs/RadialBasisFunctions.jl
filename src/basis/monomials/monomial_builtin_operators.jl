@@ -4,39 +4,39 @@ struct Monomial{E,C}
 end
 
 function ∂(mb::MonomialBasis, order::T, dim::T) where {T<:Int}
-    #if mb.n <= 3 && mb.deg <= 2
-    #    if order == 1
-    #        return ∂(mb, dim)
-    #    elseif order == 2
-    #        return ∂²(mb, dim)
-    #    else
-    #        throw(
-    #            ArgumentError(
-    #                "order > 2 not currently supported with polynomial augmentation."
-    #            ),
-    #        )
-    #    end
-    #else
-    me = ∂exponents(mb, order, dim)
-    ids = monomial_recursive_list(mb, me)
-    basis = build_monomial_basis(ids, me.coeffs)
-    return basis
-    #end
+    if mb.n <= 3 && mb.deg <= 2
+        if order == 1
+            return ∂(mb, dim)
+        elseif order == 2
+            return ∂²(mb, dim)
+        else
+            throw(
+                ArgumentError(
+                    "order > 2 not currently supported with polynomial augmentation."
+                ),
+            )
+        end
+    else
+        me = ∂exponents(mb, order, dim)
+        ids = monomial_recursive_list(mb, me)
+        basis = build_monomial_basis(ids, me.coeffs)
+        return basis
+    end
 end
 
-function ∂auto!(db, f, x, shadow)
-    b = similar(db)
-    Enzyme.autodiff_deferred(
-        Forward, f, DuplicatedNoNeed(b, db), Duplicated(x, convert(typeof(x), shadow))
+function ∂auto(f, x, shadow)
+    return only(
+        Enzyme.autodiff_deferred(
+            Forward, f, DuplicatedNoNeed, Duplicated(x, convert(typeof(x), shadow))
+        ),
     )
-    return nothing
 end
 
 function ∂(m::MonomialBasis, dim::Int)
     shadow = zeros(Int, m.n)
     shadow[dim] = 1
     function ∂ℒ!(db, x)
-        ∂auto!(db, m, x, shadow)
+        db .= ∂auto(m, x, shadow)
         return nothing
     end
     return ∂ℒ!
@@ -45,9 +45,9 @@ end
 function ∂²(m::MonomialBasis, dim::Int)
     shadow = zeros(Int, m.n)
     shadow[dim] = 1
-    dm!(db, x) = ∂auto!(db, m, x, shadow)
+    dm(x) = ∂auto(m, x, shadow)
     function ∂²ℒ!(db, x)
-        ∂auto!(db, dm!, x, shadow)
+        db .= ∂auto(dm, x, shadow)
         return nothing
     end
     return ∂²ℒ!
