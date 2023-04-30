@@ -4,24 +4,24 @@ struct Monomial{E,C}
 end
 
 function ∂(mb::MonomialBasis, order::T, dim::T) where {T<:Int}
-    if mb.n <= 3 && mb.deg <= 2
-        if order == 1
-            return ∂(mb, dim)
-        elseif order == 2
-            return ∂²(mb, dim)
-        else
-            throw(
-                ArgumentError(
-                    "order > 2 not currently supported with polynomial augmentation."
-                ),
-            )
-        end
-    else
-        me = ∂exponents(mb, order, dim)
-        ids = monomial_recursive_list(mb, me)
-        basis = build_monomial_basis(ids, me.coeffs)
-        return basis
-    end
+    #if mb.n <= 3 && mb.deg <= 2
+    #    if order == 1
+    #        return ∂(mb, dim)
+    #    elseif order == 2
+    #        return ∂²(mb, dim)
+    #    else
+    #        throw(
+    #            ArgumentError(
+    #                "order > 2 not currently supported with polynomial augmentation."
+    #            ),
+    #        )
+    #    end
+    #else
+    me = ∂exponents(mb, order, dim)
+    ids = monomial_recursive_list(mb, me)
+    basis = build_monomial_basis(ids, me.coeffs)
+    return basis
+    #end
 end
 
 function ∂auto!(db, f, x, shadow)
@@ -62,7 +62,8 @@ function ∇²(m::MonomialBasis)
 end
 
 function build_monomial_basis(ids::Vector{Vector{Vector{T}}}, c::Vector{T}) where {T<:Int}
-    function basis(db, x::AbstractVector{T}) where {T}
+    function basis(db::AbstractVector{B}, x::AbstractVector) where {B}
+        db .= one(B)
         # TODO flatten loop - why does it allocate here
         @views @inbounds for i in eachindex(ids), j in eachindex(ids[i])
             db[ids[i][j]] *= x[i]

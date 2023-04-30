@@ -16,8 +16,8 @@ x = map(x -> SVector{2}(rand(2)), 1:N)
 y = f.(x)
 
 @testset "First Derivative Partials" begin
-    ∂x = partial(x, 1, 1, PHS(3; poly_deg=4))
-    ∂y = partial(x, 1, 2, PHS(3; poly_deg=4))
+    ∂x = partial(x, 1, 1, PHS(3; poly_deg=2))
+    ∂y = partial(x, 1, 2, PHS(3; poly_deg=2))
     @test percent_error(∂x(y), df_dx.(x)) < 2
     @test percent_error(∂y(y), df_dy.(x)) < 2
 

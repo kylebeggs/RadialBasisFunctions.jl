@@ -10,11 +10,12 @@ struct MonomialBasis{T<:Int,B<:Function}
     deg::T
     basis::B
     function MonomialBasis(n::T, deg::T) where {T<:Int}
-        if n <= 3 && deg <= 2
-            basis = build_monomial_basis(Val{n}(), Val{deg}())
-        else
-            basis = build_monomial_basis(n, deg)
-        end
+        #if n <= 3 && deg <= 2
+        #    basis = build_monomial_basis(Val{n}(), Val{deg}())
+        #else
+        #    basis = build_monomial_basis(n, deg)
+        #end
+        basis = build_monomial_basis(n, deg)
         return new{T,typeof(basis)}(n, deg, basis)
     end
 end
@@ -38,7 +39,8 @@ function build_monomial_basis(n::T, deg::T) where {T<:Int}
 end
 
 function build_monomial_basis(ids::Vector{Vector{Vector{T}}}) where {T<:Int}
-    function basis(b::AbstractVector, x::AbstractVector{T}) where {T}
+    function basis(b::AbstractVector{B}, x::AbstractVector) where {B}
+        b .= one(B)
         # TODO flatten loop - why does it allocate here
         @views @inbounds for i in eachindex(ids), k in eachindex(ids[i])
             b[ids[i][k]] *= x[i]
