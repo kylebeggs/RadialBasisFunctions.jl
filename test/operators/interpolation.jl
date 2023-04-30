@@ -1,4 +1,4 @@
-using RadialBasisOperators
+using RadialBasisFunctions
 using StaticArrays
 
 """

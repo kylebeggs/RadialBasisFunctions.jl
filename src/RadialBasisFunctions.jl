@@ -1,4 +1,4 @@
-module RadialBasisOperators
+module RadialBasisFunctions
 
 using NearestNeighbors
 using SymRCM

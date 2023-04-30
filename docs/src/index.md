@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = RadialBasisOperators
+CurrentModule = RadialBasisFunctions
 ```
 
-# RadialBasisOperators
+# RadialBasisFunctions
 
-Documentation for [RadialBasisOperators](https://github.com/kylebeggs/RadialBasisOperators.jl).
+Documentation for [RadialBasisFunctions](https://github.com/kylebeggs/RadialBasisFunctions.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [RadialBasisOperators]
+Modules = [RadialBasisFunctions]
 ```

@@ -1,2 +1,2 @@
-# RadialBasisOperators
+# RadialBasisFunctions
 
