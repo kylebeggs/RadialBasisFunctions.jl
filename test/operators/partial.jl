@@ -21,30 +21,30 @@ y = f.(x)
     @test percent_error(∂x(y), df_dx.(x)) < 2
     @test percent_error(∂y(y), df_dy.(x)) < 2
 
-    ∂x = partial(x, 1, 1, IMQ(1; poly_deg=4))
-    ∂y = partial(x, 1, 2, IMQ(1; poly_deg=4))
+    ∂x = partial(x, 1, 1, IMQ(1; poly_deg=2))
+    ∂y = partial(x, 1, 2, IMQ(1; poly_deg=2))
     @test percent_error(∂x(y), df_dx.(x)) < 2
     @test percent_error(∂y(y), df_dy.(x)) < 2
 
-    ∂x = partial(x, 1, 1, Gaussian(1; poly_deg=4))
-    ∂y = partial(x, 1, 2, Gaussian(1; poly_deg=4))
+    ∂x = partial(x, 1, 1, Gaussian(1; poly_deg=2))
+    ∂y = partial(x, 1, 2, Gaussian(1; poly_deg=2))
     @test percent_error(∂x(y), df_dx.(x)) < 2
     @test percent_error(∂y(y), df_dy.(x)) < 2
 end
 
 @testset "Second Derivative Partials" begin
-    ∂2x = partial(x, 2, 1, PHS(3; poly_deg=4))
-    ∂2y = partial(x, 2, 2, PHS(3; poly_deg=4))
+    ∂2x = partial(x, 2, 1, PHS(3; poly_deg=2))
+    ∂2y = partial(x, 2, 2, PHS(3; poly_deg=2))
     @test percent_error(∂2x(y), d2f_dxx.(x)) < 2
     @test percent_error(∂2y(y), d2f_dyy.(x)) < 2
 
-    ∂2x = partial(x, 2, 1, IMQ(1; poly_deg=4))
-    ∂2y = partial(x, 2, 2, IMQ(1; poly_deg=4))
+    ∂2x = partial(x, 2, 1, IMQ(1; poly_deg=2))
+    ∂2y = partial(x, 2, 2, IMQ(1; poly_deg=2))
     @test percent_error(∂2x(y), d2f_dxx.(x)) < 2
     @test percent_error(∂2y(y), d2f_dyy.(x)) < 2
 
-    ∂2x = partial(x, 2, 1, Gaussian(1; poly_deg=4))
-    ∂2y = partial(x, 2, 2, Gaussian(1; poly_deg=4))
+    ∂2x = partial(x, 2, 1, Gaussian(1; poly_deg=2))
+    ∂2y = partial(x, 2, 2, Gaussian(1; poly_deg=2))
     @test percent_error(∂2x(y), d2f_dxx.(x)) < 2
     @test percent_error(∂2y(y), d2f_dyy.(x)) < 2
 end

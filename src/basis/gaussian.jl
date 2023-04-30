@@ -53,3 +53,5 @@ function Base.show(io::IO, rbf::Gaussian)
         print(io, "\n└─Polynomial augmentation: degree $(rbf.poly_deg)")
     end
 end
+
+print_basis(rbf::Gaussian) = "Gaussian (ε = $(rbf.ε))"

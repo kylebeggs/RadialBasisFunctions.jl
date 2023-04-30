@@ -113,7 +113,7 @@ function ∇²(::PHS7)
 end
 
 function Base.show(io::IO, rbf::R) where {R<:AbstractPHS}
-    print(io, print_phs(rbf))
+    print(io, print_basis(rbf))
     if rbf.poly_deg < 0
         print(io, "\n  No Monomial augmentation")
     else
@@ -121,7 +121,7 @@ function Base.show(io::IO, rbf::R) where {R<:AbstractPHS}
     end
 end
 
-print_phs(::PHS1) = "Polyharmonic spline, r¹"
-print_phs(::PHS3) = "Polyharmonic spline, r³"
-print_phs(::PHS5) = "Polyharmonic spline, r⁵"
-print_phs(::PHS7) = "Polyharmonic spline, r⁷"
+print_basis(::PHS1) = "Polyharmonic spline (r¹)"
+print_basis(::PHS3) = "Polyharmonic spline (r³)"
+print_basis(::PHS5) = "Polyharmonic spline (r⁵)"
+print_basis(::PHS7) = "Polyharmonic spline (r⁷)"

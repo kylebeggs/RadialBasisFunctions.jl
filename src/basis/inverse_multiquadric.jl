@@ -65,3 +65,5 @@ function Base.show(io::IO, rbf::IMQ)
         print(io, "\n└─Polynomial augmentation: degree $(rbf.poly_deg)")
     end
 end
+
+print_basis(rbf::IMQ) = "Inverse Multiquadric (ε = $(rbf.ε))"

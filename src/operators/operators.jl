@@ -71,7 +71,7 @@ function Base.show(io::IO, op::RadialBasisOperator)
     println(io, "  Dimensions: ", length(first(op.data)))
     println(io, "  Stencil size: ", length(first(op.adjl)))
     return println(
-        io, "  Basis: ", typeof(op.basis), " with degree $(op.basis.poly_deg) Monomial"
+        io, "  Basis: ", print_basis(op.basis), " with degree $(op.basis.poly_deg) Monomial"
     )
 end
 
