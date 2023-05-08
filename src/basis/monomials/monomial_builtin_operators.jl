@@ -4,10 +4,24 @@ struct Monomial{E,C}
 end
 
 function ∂(mb::MonomialBasis, order::T, dim::T) where {T<:Int}
-    me = ∂exponents(mb, order, dim)
-    ids = monomial_recursive_list(mb, me)
-    basis = build_monomial_basis(ids, me.coeffs)
-    return basis
+    if mb.n <= 3 && mb.deg <= 2
+        if order == 1
+            return ∂(mb, dim)
+        elseif order == 2
+            return ∂²(mb, dim)
+        else
+            throw(
+                ArgumentError(
+                    "order > 2 not currently supported with polynomial augmentation."
+                ),
+            )
+        end
+    else
+        me = ∂exponents(mb, order, dim)
+        ids = monomial_recursive_list(mb, me)
+        basis = build_monomial_basis(ids, me.coeffs)
+        return basis
+    end
 end
 
 ∇(m::MonomialBasis) = ∇ℒ(x) = ForwardDiff.jacobian(m, x)
