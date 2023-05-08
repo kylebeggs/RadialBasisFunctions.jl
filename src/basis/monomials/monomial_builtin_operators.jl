@@ -4,38 +4,10 @@ struct Monomial{E,C}
 end
 
 function ∂(mb::MonomialBasis, order::T, dim::T) where {T<:Int}
-    #if mb.n <= 3 && mb.deg <= 2
-    #    if order == 1
-    #        return ∂(mb, dim)
-    #    elseif order == 2
-    #        return ∂²(mb, dim)
-    #    else
-    #        throw(
-    #            ArgumentError(
-    #                "order > 2 not currently supported with polynomial augmentation."
-    #            ),
-    #        )
-    #    end
-    #else
-    #    me = ∂exponents(mb, order, dim)
-    #    ids = monomial_recursive_list(mb, me)
-    #    basis = build_monomial_basis(ids, me.coeffs)
-    #    return basis
-    #end
-
-    # TODO fix Enzyme hanging
     me = ∂exponents(mb, order, dim)
     ids = monomial_recursive_list(mb, me)
     basis = build_monomial_basis(ids, me.coeffs)
     return basis
-end
-
-function ∂auto(f, x, shadow)
-    return only(
-        Enzyme.autodiff_deferred(
-            Forward, f, DuplicatedNoNeed, Duplicated(x, convert(typeof(x), shadow))
-        ),
-    )
 end
 
 function ∂(m::MonomialBasis, dim::Int)
