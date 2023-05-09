@@ -10,38 +10,26 @@ function ∂(mb::MonomialBasis, order::T, dim::T) where {T<:Int}
     return basis
 end
 
-function ∂(m::MonomialBasis, dim::Int)
-    shadow = zeros(Int, m.n)
-    shadow[dim] = 1
-    function ∂ℒ!(db, x)
-        db .= ∂auto(m, x, shadow)
-        return nothing
-    end
-    return ∂ℒ!
-end
-
-function ∂²(m::MonomialBasis, dim::Int)
-    shadow = zeros(Int, m.n)
-    shadow[dim] = 1
-    dm(x) = ∂auto(m, x, shadow)
-    function ∂²ℒ!(db, x)
-        db .= ∂auto(dm, x, shadow)
-        return nothing
-    end
-    return ∂²ℒ!
-end
-
 ∇(m::MonomialBasis) = ∇ℒ(x) = ForwardDiff.jacobian(m, x)
 
 function ∇²(m::MonomialBasis)
-    return function ∇²ℒ(x)
-        return sum([ForwardDiff.jacobian(∂(m, dim), x)[:, dim] for dim in eachindex(x)])
+    ∂² = ntuple(dim -> ∂(m, 2, dim), m.n)
+    function ∇²ℒ(b, x)
+        cache = ones(size(b))
+        b .= 0
+        for ∂²! in ∂²
+            # use mapreduce here instead?
+            ∂²!(cache, x)
+            b .+= cache
+        end
+        return nothing
     end
+    return ∇²ℒ
 end
 
 function build_monomial_basis(ids::Vector{Vector{Vector{T}}}, c::Vector{T}) where {T<:Int}
     function basis(db::AbstractVector{B}, x::AbstractVector) where {B}
-        db .= one(B)
+        db .= 1
         # TODO flatten loop - why does it allocate here
         @views @inbounds for i in eachindex(ids), j in eachindex(ids[i])
             db[ids[i][j]] *= x[i]

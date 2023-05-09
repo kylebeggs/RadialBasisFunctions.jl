@@ -1,5 +1,6 @@
 using RadialBasisFunctions
 using StaticArrays
+using Random
 
 """
     franke(x)
@@ -15,5 +16,5 @@ function franke(x)
 end
 
 N = 100
-x = map(x -> SVector{2}(rand(2)), 1:N)
+x = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), 1:N)
 y = franke.(x)

@@ -83,7 +83,8 @@ function _build_rhs!(
     # monomial augmentation
     if basis.poly_deg > -1
         N = length(b)
-        ℒmon(view(b, (k + 1):N), first(data))
+        bmono = view(b, (k + 1):N)
+        ℒmon(bmono, first(data))
     end
 
     return nothing

@@ -1,6 +1,7 @@
 using RadialBasisFunctions
 using StaticArrays
 using Statistics
+using Random
 
 rsme(test, correct) = sqrt(sum((test - correct) .^ 2) / sum(correct .^ 2))
 percent_error(test, correct) = mean(abs.((test .- correct) ./ correct)) * 100
@@ -11,7 +12,7 @@ d2f_dyy(x) = -4 * sin(2 * x[2])
 ∇²f(x) = d2f_dxx(x) + d2f_dyy(x)
 
 N = 1000
-x = map(x -> SVector{2}(rand(2)), 1:N)
+x = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), 1:N)
 y = f.(x)
 
 @testset "Laplacian" begin
