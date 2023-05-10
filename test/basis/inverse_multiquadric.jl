@@ -1,4 +1,5 @@
 using RadialBasisFunctions
+const RBF = RadialBasisFunctions
 using StaticArrays
 
 @testset "Constructors" begin
@@ -26,9 +27,9 @@ end
 
 @testset "Derivatives" begin
     dim = 1
-    ∂rbf = ∂(imq, dim)
-    ∂²rbf = ∂²(imq, dim)
-    ∇rbf = ∇(imq)
+    ∂rbf = RBF.∂(imq, dim)
+    ∂²rbf = RBF.∂²(imq, dim)
+    ∇rbf = RBF.∇(imq)
 
     @test ∂rbf(x₁, x₂) ≈ 4 / (21 * sqrt(21))
     @test all(∇rbf(x₁, x₂) .≈ (4 / (21 * sqrt(21)), 8 / (21 * sqrt(21))))

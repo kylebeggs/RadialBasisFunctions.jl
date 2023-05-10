@@ -10,7 +10,19 @@ function ∂(mb::MonomialBasis, order::T, dim::T) where {T<:Int}
     return basis
 end
 
-∇(m::MonomialBasis) = ∇ℒ(x) = ForwardDiff.jacobian(m, x)
+∂²(mb::MonomialBasis, dim::T) where {T} = ∂(mb, 2, dim)
+
+function ∇(m::MonomialBasis)
+    ∂! = ntuple(dim -> ∂(m, 1, dim), m.n)
+    function ∇ℒ(b, x)
+        for i in eachindex(∂!)
+            b[i] .= 0
+            ∂![i](b[i], x)
+        end
+        return nothing
+    end
+    return ∇ℒ
+end
 
 function ∇²(m::MonomialBasis)
     ∂² = ntuple(dim -> ∂(m, 2, dim), m.n)

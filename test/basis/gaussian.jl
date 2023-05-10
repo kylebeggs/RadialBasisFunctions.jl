@@ -1,4 +1,5 @@
 using RadialBasisFunctions
+const RBF = RadialBasisFunctions
 using StaticArrays
 
 @testset "Constructors" begin
@@ -26,9 +27,9 @@ end
 
 @testset "Derivatives" begin
     dim = 1
-    ∂rbf = ∂(g, dim)
-    ∂²rbf = ∂²(g, dim)
-    ∇rbf = ∇(g)
+    ∂rbf = RBF.∂(g, dim)
+    ∂²rbf = RBF.∂²(g, dim)
+    ∇rbf = RBF.∇(g)
 
     @test ∂rbf(x₁, x₂) ≈ 8 / exp(20)
     @test all(∇rbf(x₁, x₂) .≈ (8 / exp(20), 16 / exp(20)))

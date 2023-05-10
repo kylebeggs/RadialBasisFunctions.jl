@@ -1,4 +1,5 @@
 using RadialBasisFunctions
+const RBF = RadialBasisFunctions
 using StaticArrays
 
 @testset "Constructors" begin
@@ -24,9 +25,9 @@ end
 
     @testset "Derivatives" begin
         dim = 1
-        ∂rbf = ∂(phs, dim)
-        ∂²rbf = ∂²(phs, dim)
-        ∇rbf = ∇(phs)
+        ∂rbf = RBF.∂(phs, dim)
+        ∂²rbf = RBF.∂²(phs, dim)
+        ∇rbf = RBF.∇(phs)
 
         @test ∂rbf(x₁, x₂) ≈ -1 / sqrt(5)
         @test all(∇rbf(x₁, x₂) .≈ (-1 / sqrt(5), -2 / sqrt(5)))
@@ -45,9 +46,9 @@ end
 
     @testset "Derivatives" begin
         dim = 1
-        ∂rbf = ∂(phs, dim)
-        ∂²rbf = ∂²(phs, dim)
-        ∇rbf = ∇(phs)
+        ∂rbf = RBF.∂(phs, dim)
+        ∂²rbf = RBF.∂²(phs, dim)
+        ∇rbf = RBF.∇(phs)
 
         @test ∂rbf(x₁, x₂) ≈ -3 * sqrt(5)
         @test all(∇rbf(x₁, x₂) .≈ (-3 * sqrt(5), -6 * sqrt(5)))
@@ -66,9 +67,9 @@ end
 
     @testset "Derivatives" begin
         dim = 1
-        ∂rbf = ∂(phs, dim)
-        ∂²rbf = ∂²(phs, dim)
-        ∇rbf = ∇(phs)
+        ∂rbf = RBF.∂(phs, dim)
+        ∂²rbf = RBF.∂²(phs, dim)
+        ∇rbf = RBF.∇(phs)
 
         @test ∂rbf(x₁, x₂) ≈ -25 * sqrt(5)
         @test all(∇rbf(x₁, x₂) .≈ (-25 * sqrt(5), -50 * sqrt(5)))
@@ -86,9 +87,9 @@ end
 
     @testset "Derivatives" begin
         dim = 1
-        ∂rbf = ∂(phs, dim)
-        ∂²rbf = ∂²(phs, dim)
-        ∇rbf = ∇(phs)
+        ∂rbf = RBF.∂(phs, dim)
+        ∂²rbf = RBF.∂²(phs, dim)
+        ∇rbf = RBF.∇(phs)
 
         @test ∂rbf(x₁, x₂) ≈ -175 * sqrt(5)
         @test all(∇rbf(x₁, x₂) .≈ (-175 * sqrt(5), -350 * sqrt(5)))

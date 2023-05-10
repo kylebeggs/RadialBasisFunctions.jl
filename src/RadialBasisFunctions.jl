@@ -9,9 +9,6 @@ using StaticArrays
 using Statistics
 using Distances
 using ForwardDiff
-using Enzyme
-using StructArrays
-using Enzyme
 using Combinatorics
 
 abstract type AbstractRadialBasisOperator end
@@ -21,6 +18,8 @@ include("utils.jl")
 include("linalg/stencil.jl")
 include("operators/operators.jl")
 include("interpolation.jl")
+
+const Δ = ∇² # some people like this notation for the Laplacian
 
 # operators
 export RadialBasisOperator
@@ -41,7 +40,6 @@ export AbstractPHS, PHS, PHS1, PHS3, PHS5, PHS7
 export IMQ
 export Gaussian
 export MonomialBasis
-export ∂, ∂², ∇, ∇²
 
 # utility functions
 export find_neighbors, reorder_points!
