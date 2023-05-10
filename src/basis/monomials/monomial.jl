@@ -22,10 +22,6 @@ function (m::MonomialBasis)(x::AbstractVector{T}) where {T}
 end
 (m::MonomialBasis)(b, x) = m.basis(b, x)
 
-function Base.show(io::IO, pb::MonomialBasis)
-    return print(io, "MonomialBasis, deg=$(pb.deg) in $(pb.n) dimensions")
-end
-
 function build_monomial_basis(n::T, deg::T) where {T<:Int}
     e = multiexponents(n + 1, deg)
     e = map(i -> getindex.(e, i), 1:n)
@@ -43,4 +39,9 @@ function build_monomial_basis(ids::Vector{Vector{Vector{T}}}) where {T<:Int}
         return nothing
     end
     return basis
+end
+
+# pretty printing
+function Base.show(io::IO, pb::MonomialBasis)
+    return print(io, "MonomialBasis, deg=$(pb.deg) in $(pb.n) dimensions")
 end

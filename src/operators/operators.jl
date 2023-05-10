@@ -65,13 +65,16 @@ include("operator_operations.jl")
 # pretty printing
 function Base.show(io::IO, op::RadialBasisOperator)
     println(io, "RadialBasisOperator")
-    println(io, "  Operator: " * print_op(op.ℒ))
-    println(io, "  Data type: ", typeof(first(op.data)))
-    println(io, "  Number of points: ", length(op.data))
-    println(io, "  Dimensions: ", length(first(op.data)))
-    println(io, "  Stencil size: ", length(first(op.adjl)))
+    println(io, "  └─Operator: " * print_op(op.ℒ))
+    println(io, "  └─Data type: ", typeof(first(op.data)))
+    println(io, "  └─Number of points: ", length(op.data))
+    println(io, "  └─Dimensions: ", length(first(op.data)))
+    println(io, "  └─Stencil size: ", length(first(op.adjl)))
     return println(
-        io, "  Basis: ", print_basis(op.basis), " with degree $(op.basis.poly_deg) Monomial"
+        io,
+        "  └─Basis: ",
+        print_basis(op.basis),
+        " with degree $(op.basis.poly_deg) Monomial",
     )
 end
 

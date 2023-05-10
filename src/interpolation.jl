@@ -12,13 +12,13 @@ function RadialBasisInterp(x, y, basis::B=PHS()) where {B<:AbstractRadialBasis}
     k = length(x)  # number of data in influence/support domain
     npoly = binomial(dim + basis.poly_deg, basis.poly_deg)
     n = k + npoly
-    poly = MonomialBasis(dim, basis.poly_deg)
+    mon = MonomialBasis(dim, basis.poly_deg)
     A = Symmetric(zeros(eltype(first(x)), n, n))
-    _build_collocation_matrix!(A, x, basis, k, poly)
+    _build_collocation_matrix!(A, x, basis, mon, k)
     b = zeros(eltype(first(x)), n)
     b[1:k] .= y
     w = A \ b
-    return RadialBasisInterp(x, y, w[1:k], w[(k + 1):end], basis, poly)
+    return RadialBasisInterp(x, y, w[1:k], w[(k + 1):end], basis, mon)
 end
 
 function (rbfi::RadialBasisInterp)(x::T) where {T}
@@ -36,3 +36,18 @@ function (rbfi::RadialBasisInterp)(x::T) where {T}
 end
 
 (rbfi::RadialBasisInterp)(x::Vector{<:AbstractVector}) = [rbfi(val) for val in x]
+
+# pretty printing
+function Base.show(io::IO, op::RadialBasisInterp)
+    println(io, "RadialBasisInterp")
+    println(io, "  └─Input type: ", typeof(first(op.x)))
+    println(io, "  └─Output type: ", typeof(first(op.y)))
+    println(io, "  └─Number of points: ", length(op.x))
+    #println(io, "  Stencil size: ", length(first(op.adjl)))
+    return println(
+        io,
+        "  └─Basis: ",
+        print_basis(op.rbf_basis),
+        " with degree $(op.monomial_basis.deg) Monomial",
+    )
+end
