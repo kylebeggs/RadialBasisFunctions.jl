@@ -15,6 +15,12 @@ function franke(x)
     return a + b + c - d
 end
 
-N = 100
+N = 1000
 x = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), 1:N)
 y = franke.(x)
+
+interp = RadialBasisInterp(x, y, PHS(3; poly_deg=2))
+@test interp isa RadialBasisInterp
+
+xnew = SVector(0.5, 0.5)
+@test abs(interp(xnew) - franke(xnew)) < 1e-5
