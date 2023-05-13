@@ -8,7 +8,6 @@ using SparseArrays
 using StaticArrays
 using Statistics
 using Distances
-using ForwardDiff
 using Combinatorics
 
 abstract type AbstractRadialBasisOperator end
