@@ -30,14 +30,14 @@ end
 
 # evaluate
 function (op::RadialBasisOperator)(x)
-    !op.valid_cache[] && update_weights!(op)
+    !is_cache_valid(op) && update_weights!(op)
     return op.weights * x
 end
 
 # update weights
 function update_weights!(op::RadialBasisOperator)
     op.weights .= _build_weightmx(op.ℒ, op.data, op.adjl, op.basis)
-    op.valid_cache[] = true
+    validate_cache(op)
     return nothing
 end
 
@@ -45,22 +45,32 @@ end
 function LinearAlgebra.mul!(
     y::AbstractVecOrMat, op::RadialBasisOperator, x::AbstractVecOrMat
 )
-    !op.valid_cache[] && update_weights!(op)
+    !is_cache_valid(op) && update_weights!(op)
     return mul!(y, op.weights, x)
 end
 function LinearAlgebra.mul!(
     y::AbstractVecOrMat, op::RadialBasisOperator, x::AbstractVecOrMat, α, β
 )
-    !op.valid_cache[] && update_weights!(op)
+    !is_cache_valid(op) && update_weights!(op)
     return mul!(y, op.weights, x, α, β)
 end
 
 Base.getindex(op::O, i) where {O<:AbstractRadialBasisOperator} = nonzeros(op.weights[i, :])
+invalidate_cache(op::RadialBasisOperator) = op.valid_cache[] = false
+validate_cache(op::RadialBasisOperator) = op.valid_cache[] = true
+is_cache_valid(op::RadialBasisOperator) = op.valid_cache[]
 
 # include built-in operators
-include("scalar_valued.jl")
-include("vector_valued.jl")
-include("operator_operations.jl")
+abstract type AbstractOperator end
+abstract type ScalarValuedOperator <: AbstractOperator end
+abstract type VectorValuedOperator <: AbstractOperator end
+(op::AbstractOperator)(x) = op.ℒ(x)
+
+include("partial.jl")
+include("laplacian.jl")
+include("gradient.jl")
+include("monomial.jl")
+include("operator_combinations.jl")
 
 # pretty printing
 function Base.show(io::IO, op::RadialBasisOperator)

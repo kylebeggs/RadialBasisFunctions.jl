@@ -7,7 +7,7 @@ function ∂(mb::MonomialBasis, order::T, dim::T) where {T<:Int}
     me = ∂exponents(mb, order, dim)
     ids = monomial_recursive_list(mb, me)
     basis = build_monomial_basis(ids, me.coeffs)
-    return basis
+    return ℒMonomial(basis)
 end
 
 ∂²(mb::MonomialBasis, dim::T) where {T} = ∂(mb, 2, dim)

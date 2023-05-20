@@ -35,6 +35,7 @@ export RadialBasisInterp
 
 # bases
 export AbstractRadialBasis
+export RadialBasisFunction
 export AbstractPHS, PHS, PHS1, PHS3, PHS5, PHS7
 export IMQ
 export Gaussian

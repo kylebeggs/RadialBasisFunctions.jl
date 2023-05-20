@@ -43,7 +43,7 @@ function Base.show(io::IO, op::RadialBasisInterp)
     println(io, "  └─Input type: ", typeof(first(op.x)))
     println(io, "  └─Output type: ", typeof(first(op.y)))
     println(io, "  └─Number of points: ", length(op.x))
-    #println(io, "  Stencil size: ", length(first(op.adjl)))
+    println(io, "  └─Stencil size: ", length(first(op.adjl)))
     return println(
         io,
         "  └─Basis: ",
