@@ -16,7 +16,7 @@ end
 include("polyharmonic_spline.jl")
 include("inverse_multiquadric.jl")
 include("gaussian.jl")
-include("monomials/monomial.jl")
+include("monomial.jl")
 
 function ∂(basis::B, order::T, dim::T) where {T<:Int,B<:AbstractRadialBasis}
     return ∂(basis, Val{order}(), dim)
