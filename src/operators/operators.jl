@@ -3,8 +3,7 @@
 
 Operator of data using a radial basis with potential monomial augmentation.
 """
-struct RadialBasisOperator{L,W<:AbstractMatrix,D,A,B<:AbstractRadialBasis} <:
-       AbstractRadialBasisOperator
+struct RadialBasisOperator{L,W,D,A,B<:AbstractRadialBasis} <: AbstractRadialBasisOperator
     ℒ::L
     weights::W
     data::D
@@ -13,7 +12,8 @@ struct RadialBasisOperator{L,W<:AbstractMatrix,D,A,B<:AbstractRadialBasis} <:
     valid_cache::Base.RefValue{Bool}
     function RadialBasisOperator(
         ℒ::L, weights::W, data::D, adjl::A, basis::B
-    ) where {L,W<:AbstractMatrix,D,A,B<:AbstractRadialBasis}
+    ) where {L,W,D,A,B<:AbstractRadialBasis}
+        #return new{L}(ℒ, weights, data, adjl, basis, Ref(false))
         return new{L,W,D,A,B}(ℒ, weights, data, adjl, basis, Ref(false))
     end
 end
@@ -28,20 +28,24 @@ function RadialBasisOperator(
     return RadialBasisOperator(ℒ, weights, data, adjl, basis)
 end
 
+function RadialBasisOperator(
+    ℒ::Gradient,
+    data::AbstractVector{D},
+    basis::B=PHS(3; poly_deg=2);
+    k::T=autoselect_k(data, basis),
+) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+    adjl = find_neighbors(data, k)
+    N = length(data)
+    weights = ntuple(_ -> spzeros(N, N), length(ℒ.ℒ))
+    return RadialBasisOperator(ℒ, weights, data, adjl, basis)
+end
+
 # evaluate
 function (op::RadialBasisOperator)(x)
     !is_cache_valid(op) && update_weights!(op)
     return op.weights * x
 end
 
-# update weights
-function update_weights!(op::RadialBasisOperator)
-    op.weights .= _build_weightmx(op.ℒ, op.data, op.adjl, op.basis)
-    validate_cache(op)
-    return nothing
-end
-
-# operations
 function LinearAlgebra.mul!(
     y::AbstractVecOrMat, op::RadialBasisOperator, x::AbstractVecOrMat
 )
@@ -53,6 +57,45 @@ function LinearAlgebra.mul!(
 )
     !is_cache_valid(op) && update_weights!(op)
     return mul!(y, op.weights, x, α, β)
+end
+
+# evaluate
+function (op::RadialBasisOperator{<:VectorValuedOperator})(x::AbstractVector)
+    !is_cache_valid(op) && update_weights!(op)
+    return map(w -> w * x, op.weights)
+end
+function LinearAlgebra.:⋅(
+    op::RadialBasisOperator{<:VectorValuedOperator}, x::AbstractVector
+)
+    !is_cache_valid(op) && update_weights!(op)
+    return sum(op(x))
+end
+
+# TODO
+function LinearAlgebra.mul!(
+    y::AbstractVector{<:Real},
+    op::RadialBasisOperator{<:VectorValuedOperator},
+    x::AbstractVector,
+)
+    !is_cache_valid(op) && update_weights!(op)
+    for i in eachindex(op.weights)
+        mul!(y[i], op.weights[i], x)
+    end
+end
+
+# update weights
+function update_weights!(op::RadialBasisOperator)
+    op.weights .= _build_weightmx(op.ℒ, op.data, op.adjl, op.basis)
+    validate_cache(op)
+    return nothing
+end
+
+function update_weights!(op::RadialBasisOperator{<:VectorValuedOperator})
+    for (i, ℒ) in enumerate(op.ℒ.ℒ)
+        op.weights[i] .= _build_weightmx(ℒ, op.data, op.adjl, op.basis)
+    end
+    validate_cache(op)
+    return nothing
 end
 
 Base.getindex(op::O, i) where {O<:AbstractRadialBasisOperator} = nonzeros(op.weights[i, :])
