@@ -1,3 +1,8 @@
+abstract type AbstractRadialBasisOperator end
+abstract type AbstractOperator end
+abstract type ScalarValuedOperator <: AbstractOperator end
+abstract type VectorValuedOperator <: AbstractOperator end
+
 """
     struct RadialBasisOperator <: AbstractRadialBasisOperator
 
@@ -13,7 +18,6 @@ struct RadialBasisOperator{L,W,D,A,B<:AbstractRadialBasis} <: AbstractRadialBasi
     function RadialBasisOperator(
         ℒ::L, weights::W, data::D, adjl::A, basis::B
     ) where {L,W,D,A,B<:AbstractRadialBasis}
-        #return new{L}(ℒ, weights, data, adjl, basis, Ref(false))
         return new{L,W,D,A,B}(ℒ, weights, data, adjl, basis, Ref(false))
     end
 end
@@ -25,18 +29,6 @@ function RadialBasisOperator(
     adjl = find_neighbors(data, k)
     N = length(data)
     weights = spzeros(N, N)
-    return RadialBasisOperator(ℒ, weights, data, adjl, basis)
-end
-
-function RadialBasisOperator(
-    ℒ::Gradient,
-    data::AbstractVector{D},
-    basis::B=PHS(3; poly_deg=2);
-    k::T=autoselect_k(data, basis),
-) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
-    adjl = find_neighbors(data, k)
-    N = length(data)
-    weights = ntuple(_ -> spzeros(N, N), length(ℒ.ℒ))
     return RadialBasisOperator(ℒ, weights, data, adjl, basis)
 end
 
@@ -103,17 +95,7 @@ invalidate_cache(op::RadialBasisOperator) = op.valid_cache[] = false
 validate_cache(op::RadialBasisOperator) = op.valid_cache[] = true
 is_cache_valid(op::RadialBasisOperator) = op.valid_cache[]
 
-# include built-in operators
-abstract type AbstractOperator end
-abstract type ScalarValuedOperator <: AbstractOperator end
-abstract type VectorValuedOperator <: AbstractOperator end
 (op::AbstractOperator)(x) = op.ℒ(x)
-
-include("partial.jl")
-include("laplacian.jl")
-include("gradient.jl")
-include("monomial.jl")
-include("operator_combinations.jl")
 
 # pretty printing
 function Base.show(io::IO, op::RadialBasisOperator)
