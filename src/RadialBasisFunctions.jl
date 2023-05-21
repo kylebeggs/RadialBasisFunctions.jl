@@ -10,12 +10,17 @@ using Statistics
 using Distances
 using Combinatorics
 
-abstract type AbstractRadialBasisOperator end
-
 include("basis/basis.jl")
 include("utils.jl")
 include("linalg/stencil.jl")
+
 include("operators/operators.jl")
+include("operators/partial.jl")
+include("operators/laplacian.jl")
+include("operators/gradient.jl")
+include("operators/monomial.jl")
+include("operators/operator_combinations.jl")
+
 include("interpolation.jl")
 
 const Δ = ∇² # some people like this notation for the Laplacian
@@ -23,11 +28,11 @@ const Δ = ∇² # some people like this notation for the Laplacian
 # operators
 export RadialBasisOperator
 
-# Scalar valued
+# scalar valued
 export Partial, partial
 export Laplacian, laplacian
 
-# Vector valued
+# vector valued
 export Gradient, gradient
 
 # interpolation
