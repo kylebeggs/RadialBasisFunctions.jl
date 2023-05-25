@@ -8,7 +8,11 @@ Supertype of all Polyharmonic Splines.
 """
 abstract type AbstractPHS <: AbstractRadialBasis end
 
-# convienience constructor
+"""
+    function PHS(n::T=3; poly_deg::T=2) where {T<:Int}
+
+Convienience contructor for polyharmonic splines.
+"""
 function PHS(n::T=3; poly_deg::T=2) where {T<:Int}
     check_poly_deg(poly_deg)
     if iseven(n) || n > 7
@@ -20,7 +24,11 @@ function PHS(n::T=3; poly_deg::T=2) where {T<:Int}
     return PHS7(poly_deg)
 end
 
-# Linear polyharmonic spline, ϕ(r) = r.
+"""
+    struct PHS1{T<:Int} <: AbstractPHS
+
+Polyharmonic spline radial basis function:``ϕ(r) = r``
+"""
 struct PHS1{T<:Int} <: AbstractPHS
     poly_deg::T
     function PHS1(poly_deg::T) where {T<:Int}
@@ -51,7 +59,11 @@ function ∇²(::PHS1)
     return ℒRadialBasisFunction(∇²ℒ)
 end
 
-# Cubic polyharmonic spline, ϕ(r) = r³.
+"""
+    struct PHS3{T<:Int} <: AbstractPHS
+
+Polyharmonic spline radial basis function:``ϕ(r) = r^3``
+"""
 struct PHS3{T<:Int} <: AbstractPHS
     poly_deg::T
     function PHS3(poly_deg::T) where {T<:Int}
@@ -82,7 +94,11 @@ function ∇²(::PHS3)
     return ℒRadialBasisFunction(∇²ℒ)
 end
 
-# Quintic polyharmonic spline, ϕ(r) = r⁵.
+"""
+    struct PHS5{T<:Int} <: AbstractPHS
+
+Polyharmonic spline radial basis function:``ϕ(r) = r^5``
+"""
 struct PHS5{T<:Int} <: AbstractPHS
     poly_deg::T
     function PHS5(poly_deg::T) where {T<:Int}
@@ -113,7 +129,11 @@ function ∇²(::PHS5)
     return ℒRadialBasisFunction(∇²ℒ)
 end
 
-# Septic polyharmonic spline, ϕ(r) = r⁷.
+"""
+    struct PHS7{T<:Int} <: AbstractPHS
+
+Polyharmonic spline radial basis function:``ϕ(r) = r^7``
+"""
 struct PHS7{T<:Int} <: AbstractPHS
     poly_deg::T
     function PHS7(poly_deg::T) where {T<:Int}

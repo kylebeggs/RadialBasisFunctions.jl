@@ -16,7 +16,11 @@ makedocs(;
         edit_link="main",
         assets=String[],
     ),
-    pages=["Home" => "index.md"],
+    pages=[
+        "Home" => "index.md",
+        "Getting Started" => "getting_started.md",
+        "Theory" => "theory.md",
+    ],
 )
 
 deploydocs(; repo="github.com/kylebeggs/RadialBasisFunctions.jl", devbranch="main")

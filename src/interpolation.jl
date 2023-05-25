@@ -1,3 +1,8 @@
+"""
+    struct RadialBasisInterp
+
+Type for radial basis interpolation.
+"""
 struct RadialBasisInterp{X,Y,R,M,RB,MB}
     x::X
     y::Y
@@ -7,6 +12,11 @@ struct RadialBasisInterp{X,Y,R,M,RB,MB}
     monomial_basis::MB
 end
 
+"""
+    function RadialBasisInterp(x, y, basis::B=PHS())
+
+Construct a radial basis interpolator.
+"""
 function RadialBasisInterp(x, y, basis::B=PHS()) where {B<:AbstractRadialBasis}
     dim = length(first(x))
     k = length(x)  # number of data in influence/support domain
@@ -43,7 +53,6 @@ function Base.show(io::IO, op::RadialBasisInterp)
     println(io, "  └─Input type: ", typeof(first(op.x)))
     println(io, "  └─Output type: ", typeof(first(op.y)))
     println(io, "  └─Number of points: ", length(op.x))
-    println(io, "  └─Stencil size: ", length(first(op.adjl)))
     return println(
         io,
         "  └─Basis: ",
