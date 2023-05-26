@@ -36,10 +36,10 @@ Simply install the latest stable release using Julia's package manager:
 
 ## Planned Features
 
-* [ ] Adaptive operators and interpolation. Adding / removing / modifying points and automatically updating the weights without a complete recalculation.
-* [ ] Add more built-in operator combinations that will allow you to lazily construct operators such as
-  * [ ] divergence
-  * [ ] curl
+* Adaptive operators and interpolation. Adding / removing / modifying points and automatically updating the weights without a complete recalculation.
+* Add more built-in operator combinations that will allow you to lazily construct operators such as
+  * divergence
+  * curl
 
 ## Current Limitations
 
