@@ -47,4 +47,57 @@ abs.(y_true .- y_new)
 
 ## Operators
 
-more to come here...
+This package also provides an API for operators. There is support for several built-in operators along with support for user-defined operators. Currently, we have implementations for
+
+- partial derivative (1st and 2nd order)
+- gradient
+- laplacian
+
+but we plan to add more in the future. Please make and issue or pull request for additional operators.
+
+### Partial Derivative
+
+We can take the same data as above and build a partial derivative operator with a similar construction as the interpolator. For the partial we need to specify the order of differentiation we want along with the dimension for which to take the partial. We can also supply some optional arguments such as the basis and number of points in the stencil. The function inputs order is `partial(x, order, dim, basis; k=5)`
+
+```@example overview
+df_x_rbf = partial(x, 1, 1)
+
+# define exact
+df_x(x) = 4*x[1]
+
+# error
+all(abs.(df_x.(x) .- df_x_rbf(y)) .< 1e-10)
+```
+
+### Laplacian
+
+Building a laplacian operator is as easy as
+
+```@example overview
+lap_rbf = laplacian(x)
+
+# define exact
+lap(x) = 4
+
+# error
+all(abs.(lap.(x) .- lap_rbf(y)) .< 1e-8)
+```
+
+### Gradient
+
+We can also retrieve the gradient. This is really just a convenience wrapper around `Partial`.
+
+```@example overview
+grad = gradient(x)
+
+# define exacts
+df_x(x) = 4*x[1]
+df_y(x) = 3
+
+# error
+all(df_x.(x) .≈ grad(y)[1])
+```
+
+```@example overview
+all(df_y.(x) .≈ grad(y)[2])
+```

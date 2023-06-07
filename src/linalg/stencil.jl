@@ -42,8 +42,6 @@ function _build_stencil!(
     A::Vector{<:Symmetric},
     b::Vector{<:Vector},
     id::Int,
-    #ℒrbf::ℒRadialBasisFunction,
-    #ℒmon::ℒMonomial,
     ℒrbf,
     ℒmon,
     data::AbstractVector{D},
