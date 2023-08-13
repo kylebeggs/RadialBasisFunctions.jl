@@ -157,7 +157,7 @@ function update_weights!(op::RadialBasisOperator{<:VectorValuedOperator})
     return _update_weights!(op, op.weights)
 end
 
-function _update_weights!(op, weights::AbstractMatrix)
+function _update_weights!(op, weights::NTuple{N,AbstractMatrix}) where {N}
     for (i, ℒ) in enumerate(op.ℒ.ℒ)
         weights[i] .= _build_weights(ℒ, op)
     end
