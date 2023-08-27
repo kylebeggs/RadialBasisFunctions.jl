@@ -3,26 +3,26 @@
 using StaticArrays</code></pre><h2 id="Interpolation"><a class="docs-heading-anchor" href="#Interpolation">Interpolation</a><a id="Interpolation-1"></a><a class="docs-heading-anchor-permalink" href="#Interpolation" title="Permalink"></a></h2><p>Suppose we have a set of data <span>$\mathbf{x}$</span> where <span>$\mathbf{x}_i \in \mathbb{R}^2$</span>, and we want to interpolate a function <span>$f:\mathbb{R}^2 \rightarrow \mathbb{R}$</span></p><pre><code class="language-julia hljs">f(x) = 2*x[1]^2 + 3*x[2]
 x = [SVector{2}(rand(2)) for _ in 1:1000]
 y = f.(x)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1000-element Vector{Float64}:
- 2.704245240418708
- 3.0244517712848467
- 3.740250559134836
- 1.551534262004238
- 3.781542591214568
- 2.3138775884519025
- 0.4151140644322611
- 0.5811933051343453
- 3.0974512759623014
- 1.873114303071178
+ 3.1527308745570366
+ 1.8422462676184668
+ 3.054886087579427
+ 1.8478687062264272
+ 1.880478606773131
+ 0.9093723880511866
+ 4.045623257522943
+ 0.9189131855375064
+ 2.2218603881106236
+ 4.869428672553671
  ⋮
- 4.021296125407854
- 4.602948828245429
- 2.4580042736148684
- 2.2672482039112065
- 1.4293827120717928
- 0.24612265645330395
- 2.321822053508017
- 0.08637489779569309
- 3.2750122990897337</code></pre><p>and now we can build the interpolator</p><pre><code class="language-julia hljs">interp = RadialBasisInterp(x, y)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">RadialBasisInterp
+ 0.2814382829125738
+ 0.5432957601164637
+ 2.520523436212528
+ 3.2372642740053745
+ 2.6625159993982783
+ 2.124574809686841
+ 2.486247967291833
+ 2.783151960434961
+ 1.6270241389664997</code></pre><p>and now we can build the interpolator</p><pre><code class="language-julia hljs">interp = RadialBasisInterp(x, y)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">RadialBasisInterp
   └─Input type: StaticArraysCore.SVector{2, Float64}
   └─Output type: Float64
   └─Number of points: 1000
@@ -30,23 +30,23 @@ y = f.(x)</code></pre><pre class="documenter-example-output"><code class="nohigh
 </code></pre><p>and evaluate it at a new point</p><pre><code class="language-julia hljs">x_new = [rand(2) for _ in 1:5]
 y_new = interp(x_new)
 y_true = f.(x_new)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Float64}:
- 2.14878004694753
- 0.3420896071313987
- 0.38486741559539434
- 1.2868730150635677
- 1.8819396395846368</code></pre><p>and compare the error</p><pre><code class="language-julia hljs">abs.(y_true .- y_new)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Float64}:
- 2.6645352591003757e-15
- 1.1657341758564144e-15
- 1.3877787807814457e-15
- 1.3322676295501878e-15
- 1.9984014443252818e-15</code></pre><p>Wow! The error is numerically zero! Well... we set ourselves up for success here. <code>RadialBasisInterp</code> (along with <code>RadialBasisOperator</code>) has an optional argument to provide the type of radial basis including the degree of polynomial augmentation. The default basis is a cubic polyharmonic spline with 2nd degree polynomial augmentation (which the constructor is <code>PHS(3, poly_deg=2)</code>) and given the underlying function we are interpolating is a 2nd order polynomial itself, we are able to represent it exactly (up to machine precision). Let&#39;s see what happens when we only use 1st order polynomial augmentation</p><pre><code class="language-julia hljs">interp = RadialBasisInterp(x, y, PHS(3, poly_deg=1))
+ 2.3205353896607512
+ 2.8718752868157433
+ 2.6552371027485075
+ 1.741507246445786
+ 4.514460325506446</code></pre><p>and compare the error</p><pre><code class="language-julia hljs">abs.(y_true .- y_new)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Float64}:
+ 0.0
+ 0.0
+ 4.440892098500626e-16
+ 6.661338147750939e-16
+ 8.881784197001252e-16</code></pre><p>Wow! The error is numerically zero! Well... we set ourselves up for success here. <code>RadialBasisInterp</code> (along with <code>RadialBasisOperator</code>) has an optional argument to provide the type of radial basis including the degree of polynomial augmentation. The default basis is a cubic polyharmonic spline with 2nd degree polynomial augmentation (which the constructor is <code>PHS(3, poly_deg=2)</code>) and given the underlying function we are interpolating is a 2nd order polynomial itself, we are able to represent it exactly (up to machine precision). Let&#39;s see what happens when we only use 1st order polynomial augmentation</p><pre><code class="language-julia hljs">interp = RadialBasisInterp(x, y, PHS(3, poly_deg=1))
 y_new = interp(x_new)
 abs.(y_true .- y_new)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Float64}:
- 5.291290294806572e-8
- 1.0449069290929813e-6
- 3.389285753213622e-5
- 7.905309074018874e-9
- 8.648453422699376e-5</code></pre><h2 id="Operators"><a class="docs-heading-anchor" href="#Operators">Operators</a><a id="Operators-1"></a><a class="docs-heading-anchor-permalink" href="#Operators" title="Permalink"></a></h2><p>This package also provides an API for operators. There is support for several built-in operators along with support for user-defined operators. Currently, we have implementations for</p><ul><li>partial derivative (1st and 2nd order)</li><li>gradient</li><li>laplacian</li></ul><p>but we plan to add more in the future. Please make and issue or pull request for additional operators.</p><h3 id="Partial-Derivative"><a class="docs-heading-anchor" href="#Partial-Derivative">Partial Derivative</a><a id="Partial-Derivative-1"></a><a class="docs-heading-anchor-permalink" href="#Partial-Derivative" title="Permalink"></a></h3><p>We can take the same data as above and build a partial derivative operator with a similar construction as the interpolator. For the partial we need to specify the order of differentiation we want along with the dimension for which to take the partial. We can also supply some optional arguments such as the basis and number of points in the stencil. The function inputs order is <code>partial(x, order, dim, basis; k=5)</code></p><pre><code class="language-julia hljs">df_x_rbf = partial(x, 1, 1)
+ 1.5460863278526915e-6
+ 6.278858594388481e-6
+ 1.415749295574642e-9
+ 3.515580893065362e-8
+ 1.180101242415077e-5</code></pre><h2 id="Operators"><a class="docs-heading-anchor" href="#Operators">Operators</a><a id="Operators-1"></a><a class="docs-heading-anchor-permalink" href="#Operators" title="Permalink"></a></h2><p>This package also provides an API for operators. There is support for several built-in operators along with support for user-defined operators. Currently, we have implementations for</p><ul><li>partial derivative (1st and 2nd order)</li><li>gradient</li><li>laplacian</li></ul><p>but we plan to add more in the future. Please make and issue or pull request for additional operators.</p><h3 id="Partial-Derivative"><a class="docs-heading-anchor" href="#Partial-Derivative">Partial Derivative</a><a id="Partial-Derivative-1"></a><a class="docs-heading-anchor-permalink" href="#Partial-Derivative" title="Permalink"></a></h3><p>We can take the same data as above and build a partial derivative operator with a similar construction as the interpolator. For the partial we need to specify the order of differentiation we want along with the dimension for which to take the partial. We can also supply some optional arguments such as the basis and number of points in the stencil. The function inputs order is <code>partial(x, order, dim, basis; k=5)</code></p><pre><code class="language-julia hljs">df_x_rbf = partial(x, 1, 1)
 
 # define exact
 df_x(x) = 4*x[1]
@@ -65,4 +65,4 @@ df_x(x) = 4*x[1]
 df_y(x) = 3
 
 # error
-all(df_x.(x) .≈ grad(y)[1])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><pre><code class="language-julia hljs">all(df_y.(x) .≈ grad(y)[2])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../theory/">Theory »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Sunday 27 August 2023 13:31">Sunday 27 August 2023</span>. Using Julia version 1.8.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+all(df_x.(x) .≈ grad(y)[1])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre><pre><code class="language-julia hljs">all(df_y.(x) .≈ grad(y)[2])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../theory/">Theory »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Sunday 27 August 2023 13:32">Sunday 27 August 2023</span>. Using Julia version 1.8.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
