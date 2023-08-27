@@ -37,6 +37,22 @@ function RadialBasisOperator(
     return RadialBasisOperator(ℒ, weights, data, adjl, basis)
 end
 
+function RadialBasisOperator(
+    ℒ,
+    data::AbstractVector{D},
+    centers::AbstractVector{D},
+    basis::B=PHS(3; poly_deg=2);
+    k::T=autoselect_k(data, basis),
+    sparse=true,
+) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+    TD = eltype(D)
+    adjl = find_neighbors(data, centers, k)
+    Na = length(adjl)
+    Nd = length(data)
+    weights = _allocate_weights(TD, Na, Nd, k; sparse=sparse)
+    return RadialBasisOperator(ℒ, weights, data, adjl, basis)
+end
+
 # extend Base methods
 Base.length(op::RadialBasisOperator) = length(op.adjl)
 Base.size(op::RadialBasisOperator) = size(op.weights)
