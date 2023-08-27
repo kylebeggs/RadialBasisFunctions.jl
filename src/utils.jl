@@ -1,6 +1,12 @@
-function find_neighbors(data::Vector, k::Int)
+function find_neighbors(data::AbstractVector, k::Int)
     tree = KDTree(data)
     adjl, _ = knn(tree, data, k, true)
+    return adjl
+end
+
+function find_neighbors(data::AbstractVector, centers::AbstractVector, k::Int)
+    tree = KDTree(data)
+    adjl, _ = knn(tree, centers, k, true)
     return adjl
 end
 
@@ -50,4 +56,9 @@ function check_poly_deg(poly_deg)
         throw(ArgumentError("Augmented Monomial degree must be at least 0 (constant)."))
     end
     return nothing
+end
+
+_allocate_weights(m, n, k; sparse=true) = _allocate_weights(Float64, m, n, k; sparse=sparse)
+function _allocate_weights(T, m, n, k; sparse=true)
+    return sparse ? spzeros(T, m, n) : [zeros(T, k) for _ in 1:m]
 end

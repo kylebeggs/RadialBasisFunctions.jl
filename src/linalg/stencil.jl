@@ -13,9 +13,9 @@ function _build_weightmx(
     ℒrbf = ℒ(basis)
 
     # allocate arrays to build sparse matrix
-    I = zeros(Int, k * length(data))
+    I = zeros(Int, k * length(adjl))
     J = reduce(vcat, adjl)
-    V = zeros(TD, k * length(data))
+    V = zeros(TD, k * length(adjl))
 
     n_threads = Threads.nthreads()
 
@@ -27,7 +27,7 @@ function _build_weightmx(
     d = Vector{Vector{eltype(data)}}(undef, n_threads)
 
     # build stencil for each data point and store in global weight matrix
-    Threads.@threads for i in eachindex(data)
+    Threads.@threads for i in eachindex(adjl)
         range[Threads.threadid()] = ((i - 1) * k + 1):(i * k)
         @turbo I[range[Threads.threadid()]] .= i
         d[Threads.threadid()] = data[adjl[i]]
@@ -35,7 +35,44 @@ function _build_weightmx(
             A, b, Threads.threadid(), ℒrbf, ℒmon, d, basis, mon, k
         )
     end
-    return sparse(I, J, V)
+
+    return sparse(I, J, V, length(adjl), length(data))
+end
+
+function _build_weight_vec(
+    ℒ, data::AbstractVector{D}, adjl::Vector{Vector{T}}, basis::B
+) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+    TD = eltype(first(data))
+    dim = length(first(data)) # dimension of data
+    nmon = binomial(dim + basis.poly_deg, basis.poly_deg)
+    k = length(first(adjl))  # number of data in influence/support domain
+    sizes = (k, nmon)
+
+    # build monomial basis and operator
+    mon = MonomialBasis(dim, basis.poly_deg)
+    ℒmon = ℒ(mon)
+    ℒrbf = ℒ(basis)
+
+    # allocate arrays to build sparse matrix
+    V = [zeros(TD, k) for _ in 1:length(adjl)]
+
+    n_threads = Threads.nthreads()
+
+    # create work arrays
+    n = sum(sizes)
+    A = Symmetric[Symmetric(zeros(TD, n, n), :U) for _ in 1:n_threads]
+    b = Vector[zeros(TD, n) for _ in 1:n_threads]
+    d = Vector{Vector{eltype(data)}}(undef, n_threads)
+
+    # build stencil for each data point and store in global weight matrix
+    Threads.@threads for i in eachindex(adjl)
+        d[Threads.threadid()] = data[adjl[i]]
+        V[i] = @views _build_stencil!(
+            A, b, Threads.threadid(), ℒrbf, ℒmon, d, basis, mon, k
+        )
+    end
+
+    return V
 end
 
 function _build_stencil!(
