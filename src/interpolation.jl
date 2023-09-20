@@ -17,14 +17,15 @@ end
 
 Construct a radial basis interpolator.
 """
-function RadialBasisInterp(x, y, basis::B=PHS()) where {B<:AbstractRadialBasis}
+function RadialBasisInterp(x, c, y, basis::B=PHS()) where {B<:AbstractRadialBasis}
     dim = length(first(x))
     k = length(x)  # number of data in influence/support domain
     npoly = binomial(dim + basis.poly_deg, basis.poly_deg)
     n = k + npoly
     mon = MonomialBasis(dim, basis.poly_deg)
     A = Symmetric(zeros(eltype(first(x)), n, n))
-    _build_collocation_matrix!(A, x, basis, mon, k)
+    _build_collocation_matrix!(A, x, c, basis, mon, k)
+    return A
     b = zeros(eltype(first(x)), n)
     b[1:k] .= y
     w = A \ b
@@ -37,10 +38,12 @@ function (rbfi::RadialBasisInterp)(x::T) where {T}
         rbf += rbfi.rbf_weights[i] * rbfi.rbf_basis(x, rbfi.x[i])
     end
 
-    val_poly = rbfi.monomial_basis(x)
     poly = zero(eltype(T))
-    for i in eachindex(rbfi.monomial_weights)
-        poly += rbfi.monomial_weights[i] * val_poly[i]
+    if !isempty(rbfi.monomial_weights)
+        val_poly = rbfi.monomial_basis(x)
+        for i in eachindex(rbfi.monomial_weights)
+            poly += rbfi.monomial_weights[i] * val_poly[i]
+        end
     end
     return rbf + poly
 end

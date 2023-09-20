@@ -1,5 +1,5 @@
 function _build_weightmx(
-    ℒ, data::AbstractVector{D}, adjl::Vector{Vector{T}}, basis::B
+    ℒ, data::AbstractVector{D}, centers, adjl::Vector{Vector{T}}, basis::B
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
     TD = eltype(first(data))
     dim = length(first(data)) # dimension of data
@@ -18,6 +18,7 @@ function _build_weightmx(
     V = zeros(TD, k * length(adjl))
 
     n_threads = Threads.nthreads()
+    n_threads = 1
 
     # create work arrays
     n = sum(sizes)
@@ -27,12 +28,13 @@ function _build_weightmx(
     d = Vector{Vector{eltype(data)}}(undef, n_threads)
 
     # build stencil for each data point and store in global weight matrix
-    Threads.@threads for i in eachindex(adjl)
+    #Threads.@threads for i in eachindex(adjl)
+    for i in eachindex(adjl)
         range[Threads.threadid()] = ((i - 1) * k + 1):(i * k)
         @turbo I[range[Threads.threadid()]] .= i
         d[Threads.threadid()] = data[adjl[i]]
         V[range[Threads.threadid()]] = @views _build_stencil!(
-            A, b, Threads.threadid(), ℒrbf, ℒmon, d, basis, mon, k
+            A, b, Threads.threadid(), ℒrbf, ℒmon, d, centers[i], basis, mon, k
         )
     end
 
@@ -82,12 +84,13 @@ function _build_stencil!(
     ℒrbf,
     ℒmon,
     data::AbstractVector{D},
+    center,
     basis::B,
     mon::MonomialBasis,
     k::Int,
 ) where {D<:AbstractArray,B<:AbstractRadialBasis}
     _build_collocation_matrix!(A[id], data[id], basis, mon, k)
-    _build_rhs!(b[id], ℒrbf, ℒmon, data[id], basis, k)
+    _build_rhs!(b[id], ℒrbf, ℒmon, data[id], center, basis, k)
     return (A[id] \ b[id])[1:k]
 end
 
@@ -110,18 +113,18 @@ function _build_collocation_matrix!(
 end
 
 function _build_rhs!(
-    b::AbstractVector, ℒrbf, ℒmon, data::AbstractVector{D}, basis::B, k::K
+    b::AbstractVector, ℒrbf, ℒmon, data::AbstractVector{D}, center, basis::B, k::K
 ) where {D<:AbstractArray,B<:AbstractRadialBasis,K<:Int}
     # radial basis section
     @inbounds for i in eachindex(data)
-        b[i] = ℒrbf(first(data), data[i])
+        b[i] = ℒrbf(center, data[i])
     end
 
     # monomial augmentation
     if basis.poly_deg > -1
         N = length(b)
         bmono = view(b, (k + 1):N)
-        ℒmon(bmono, first(data))
+        ℒmon(bmono, center)
     end
 
     return nothing

@@ -14,12 +14,6 @@ Lmb = L(mb)
 k = length(x)
 n = k + 3
 
-A = Symmetric(zeros(n, n))
-b = zeros(n)
-
-_build_collocation_matrix!(A, x, rb, mb, k)
-_build_rhs!(b, Lrb, Lmb, x, rb, k)
-
 function unordered_approx(A::AbstractVector, B::AbstractVector)
     length(A) != length(B) && return false
     b = deepcopy(B)
@@ -32,6 +26,8 @@ function unordered_approx(A::AbstractVector, B::AbstractVector)
 end
 
 @testset "Coefficient Matrix" begin
+    A = Symmetric(zeros(n, n))
+    _build_collocation_matrix!(A, x, rb, mb, k)
     @testset "RBFs" begin
         @test A[1, 2] ≈ (sqrt(sum((x[1] .- x[2]) .^ 2)))^3
         @test A[1, 3] ≈ (sqrt(sum((x[1] .- x[3]) .^ 2)))^3
@@ -45,6 +41,8 @@ end
 end
 
 @testset "Right-hand side" begin
+    b = zeros(n)
+    _build_rhs!(b, Lrb, Lmb, x, rb, k)
     @testset "RBFs" begin
         @test b[1] ≈ Lrb(x[1], x[1])
         @test b[2] ≈ Lrb(x[1], x[2])

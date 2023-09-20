@@ -96,7 +96,7 @@ In the RBF-FD, a stencil is built to approximate derivatives using the same neig
 
 ```math
 \mathcal{L}u(\mathbf{x}_{c})=\sum_{i=1}^{N}w_{i}u(\mathbf{x}_{i})
-```m
+```
 
 After some algebraic manipulation and substitution using equations, one arrives at a linear system for the weights ``\mathbf{w}`` as
 

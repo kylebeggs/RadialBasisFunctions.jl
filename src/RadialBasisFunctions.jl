@@ -24,6 +24,7 @@ include("operators/operator_combinations.jl")
 include("interpolation.jl")
 
 const Δ = ∇² # some people like this notation for the Laplacian
+const DIV0_OFFSET = 1e-8
 
 # operators
 export RadialBasisOperator

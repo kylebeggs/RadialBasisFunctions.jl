@@ -39,7 +39,7 @@ end
 
 (phs::PHS1)(x, xᵢ) = euclidean(x, xᵢ)
 function ∂(::PHS1, ::Val{1}, dim::Int)
-    ∂ℒ(x, xᵢ) = (x[dim] - xᵢ[dim]) / euclidean(x, xᵢ)
+    ∂ℒ(x, xᵢ) = (x[dim] - xᵢ[dim]) / (euclidean(x, xᵢ) + DIV0_OFFSET)
     return ℒRadialBasisFunction(∂ℒ)
 end
 function ∇(::PHS1)
@@ -48,13 +48,16 @@ function ∇(::PHS1)
 end
 function ∂(::PHS1, ::Val{2}, dim::Int)
     function ∂²ℒ(x, xᵢ)
-        return (-(x[dim] - xᵢ[dim])^2 + sqeuclidean(x, xᵢ)) / (euclidean(x, xᵢ)^3 + 1e-8)
+        return (-(x[dim] - xᵢ[dim])^2 + sqeuclidean(x, xᵢ)) /
+               (euclidean(x, xᵢ)^3 + DIV0_OFFSET)
     end
     return ℒRadialBasisFunction(∂²ℒ)
 end
 function ∇²(::PHS1)
     function ∇²ℒ(x, xᵢ)
-        return sum((-(x .- xᵢ) .^ 2 .+ sqeuclidean(x, xᵢ)) / (euclidean(x, xᵢ)^3 + 1e-8))
+        return sum(
+            (-(x .- xᵢ) .^ 2 .+ sqeuclidean(x, xᵢ)) / (euclidean(x, xᵢ)^3 + DIV0_OFFSET)
+        )
     end
     return ℒRadialBasisFunction(∇²ℒ)
 end
@@ -83,13 +86,16 @@ function ∇(::PHS3)
 end
 function ∂(::PHS3, ::Val{2}, dim::Int)
     function ∂²ℒ(x, xᵢ)
-        return 3 * (sqeuclidean(x, xᵢ) + (x[dim] - xᵢ[dim])^2) / (euclidean(x, xᵢ) + 1e-8)
+        return 3 * (sqeuclidean(x, xᵢ) + (x[dim] - xᵢ[dim])^2) /
+               (euclidean(x, xᵢ) + DIV0_OFFSET)
     end
     return ℒRadialBasisFunction(∂²ℒ)
 end
 function ∇²(::PHS3)
     function ∇²ℒ(x, xᵢ)
-        return sum(3 * (sqeuclidean(x, xᵢ) .+ (x .- xᵢ) .^ 2) / (euclidean(x, xᵢ) + 1e-8))
+        return sum(
+            3 * (sqeuclidean(x, xᵢ) .+ (x .- xᵢ) .^ 2) / (euclidean(x, xᵢ) + DIV0_OFFSET)
+        )
     end
     return ℒRadialBasisFunction(∇²ℒ)
 end
