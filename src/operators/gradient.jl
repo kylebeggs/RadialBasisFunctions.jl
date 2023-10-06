@@ -50,7 +50,7 @@ function RadialBasisOperator(
     adjl = find_neighbors(data, k)
     N = length(adjl)
     weights = ntuple(_ -> _allocate_weights(TD, N, N, k; sparse=sparse), length(ℒ.ℒ))
-    return RadialBasisOperator(ℒ, weights, data, adjl, basis)
+    return RadialBasisOperator(ℒ, weights, data, data, adjl, basis)
 end
 
 function RadialBasisOperator(
@@ -66,7 +66,7 @@ function RadialBasisOperator(
     Na = length(adjl)
     Nd = length(data)
     weights = ntuple(_ -> _allocate_weights(TD, Na, Nd, k; sparse=sparse), length(ℒ.ℒ))
-    return RadialBasisOperator(ℒ, weights, data, adjl, basis)
+    return RadialBasisOperator(ℒ, weights, data, centers, adjl, basis)
 end
 
 Base.size(op::RadialBasisOperator{<:Gradient}) = size(first(op.weights))

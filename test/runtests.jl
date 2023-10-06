@@ -20,6 +20,10 @@ end
     include("operators/partial.jl")
 end
 
+@safetestset "Gradient" begin
+    include("operators/gradient.jl")
+end
+
 @safetestset "Laplacian" begin
     include("operators/laplacian.jl")
 end
