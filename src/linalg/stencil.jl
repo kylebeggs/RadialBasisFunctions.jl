@@ -1,5 +1,9 @@
 function _build_weightmx(
-    ℒ, data::AbstractVector{D}, centers, adjl::Vector{Vector{T}}, basis::B
+    ℒ,
+    data::AbstractVector{D},
+    centers::AbstractVector{D},
+    adjl::Vector{Vector{T}},
+    basis::B,
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
     TD = eltype(first(data))
     dim = length(first(data)) # dimension of data
@@ -42,7 +46,11 @@ function _build_weightmx(
 end
 
 function _build_weight_vec(
-    ℒ, data::AbstractVector{D}, adjl::Vector{Vector{T}}, basis::B
+    ℒ,
+    data::AbstractVector{D},
+    centers::AbstractVector{D},
+    adjl::Vector{Vector{T}},
+    basis::B,
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
     TD = eltype(first(data))
     dim = length(first(data)) # dimension of data
@@ -70,7 +78,7 @@ function _build_weight_vec(
     Threads.@threads for i in eachindex(adjl)
         d[Threads.threadid()] = data[adjl[i]]
         V[i] = @views _build_stencil!(
-            A, b, Threads.threadid(), ℒrbf, ℒmon, d, basis, mon, k
+            A, b, Threads.threadid(), ℒrbf, ℒmon, d, centers[i], basis, mon, k
         )
     end
 

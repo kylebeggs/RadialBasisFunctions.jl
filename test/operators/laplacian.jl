@@ -26,8 +26,8 @@ y = f.(x)
     @test mean_percent_error(∇²(y), ∇²f.(x)) < 2
 end
 
-#@testset "Different Data Centers" begin
-#    x2 = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), (N + 1):(N + 1000))
-#    ∇² = laplacian(x, x2, PHS(3; poly_deg=4))
-#    @test mean_percent_error(∇²(y), ∇²f.(x2)) < 2
-#end
+@testset "Different Data Centers" begin
+    x2 = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), (N + 1):(N + 1000))
+    ∇² = laplacian(x, x2, PHS(3; poly_deg=4))
+    @test mean_percent_error(∇²(y), ∇²f.(x2)) < 2
+end

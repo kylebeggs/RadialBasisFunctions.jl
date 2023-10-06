@@ -17,15 +17,14 @@ end
 
 Construct a radial basis interpolator.
 """
-function RadialBasisInterp(x, c, y, basis::B=PHS()) where {B<:AbstractRadialBasis}
+function RadialBasisInterp(x, y, basis::B=PHS()) where {B<:AbstractRadialBasis}
     dim = length(first(x))
     k = length(x)  # number of data in influence/support domain
     npoly = binomial(dim + basis.poly_deg, basis.poly_deg)
     n = k + npoly
     mon = MonomialBasis(dim, basis.poly_deg)
     A = Symmetric(zeros(eltype(first(x)), n, n))
-    _build_collocation_matrix!(A, x, c, basis, mon, k)
-    return A
+    _build_collocation_matrix!(A, x, basis, mon, k)
     b = zeros(eltype(first(x)), n)
     b[1:k] .= y
     w = A \ b
