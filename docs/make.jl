@@ -20,6 +20,7 @@ makedocs(;
         "Home" => "index.md",
         "Getting Started" => "getting_started.md",
         "Theory" => "theory.md",
+        "API" => "api.md",
     ],
 )
 

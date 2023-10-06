@@ -58,6 +58,11 @@ function check_poly_deg(poly_deg)
     return nothing
 end
 
+function scale_cloud(data)
+    furthest_point = maximum(p -> euclidean(first(data), p), data)
+    return data ./ furthest_point
+end
+
 _allocate_weights(m, n, k; sparse=true) = _allocate_weights(Float64, m, n, k; sparse=sparse)
 function _allocate_weights(T, m, n, k; sparse=true)
     return sparse ? spzeros(T, m, n) : [zeros(T, k) for _ in 1:m]

@@ -7,17 +7,18 @@ abstract type VectorValuedOperator <: AbstractOperator end
 
 Operator of data using a radial basis with potential monomial augmentation.
 """
-struct RadialBasisOperator{L,W,D,A,B<:AbstractRadialBasis}
+struct RadialBasisOperator{L,W,D,C,A,B<:AbstractRadialBasis}
     ℒ::L
     weights::W
     data::D
+    centers::C
     adjl::A
     basis::B
     valid_cache::Base.RefValue{Bool}
     function RadialBasisOperator(
-        ℒ::L, weights::W, data::D, adjl::A, basis::B
-    ) where {L,W,D,A,B<:AbstractRadialBasis}
-        return new{L,W,D,A,B}(ℒ, weights, data, adjl, basis, Ref(false))
+        ℒ::L, weights::W, data::D, centers::C, adjl::A, basis::B
+    ) where {L,W,D,C,A,B<:AbstractRadialBasis}
+        return new{L,W,D,C,A,B}(ℒ, weights, data, centers, adjl, basis, Ref(false))
     end
 end
 
@@ -34,7 +35,7 @@ function RadialBasisOperator(
     Na = length(adjl)
     Nd = length(data)
     weights = _allocate_weights(TD, Na, Nd, k; sparse=sparse)
-    return RadialBasisOperator(ℒ, weights, data, adjl, basis)
+    return RadialBasisOperator(ℒ, weights, data, data, adjl, basis)
 end
 
 function RadialBasisOperator(
@@ -50,7 +51,7 @@ function RadialBasisOperator(
     Na = length(adjl)
     Nd = length(data)
     weights = _allocate_weights(TD, Na, Nd, k; sparse=sparse)
-    return RadialBasisOperator(ℒ, weights, data, adjl, basis)
+    return RadialBasisOperator(ℒ, weights, data, centers, adjl, basis)
 end
 
 # extend Base methods
@@ -151,7 +152,7 @@ function _build_weights(ℒ, op::RadialBasisOperator)
     if op.weights isa Vector{<:Vector}
         return _build_weight_vec(ℒ, op.data, op.adjl, op.basis)
     else
-        return _build_weightmx(ℒ, op.data, op.adjl, op.basis)
+        return _build_weightmx(ℒ, op.data, op.centers, op.adjl, op.basis)
     end
 end
 
@@ -159,7 +160,7 @@ function _build_weights(ℒ, op::RadialBasisOperator{<:VectorValuedOperator})
     if first(op.weights) isa Vector{<:Vector}
         return _build_weight_vec(ℒ, op.data, op.adjl, op.basis)
     else
-        return _build_weightmx(ℒ, op.data, op.adjl, op.basis)
+        return _build_weightmx(ℒ, op.data, op.centers, op.adjl, op.basis)
     end
 end
 

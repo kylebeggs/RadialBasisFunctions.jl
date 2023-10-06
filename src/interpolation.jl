@@ -37,10 +37,12 @@ function (rbfi::RadialBasisInterp)(x::T) where {T}
         rbf += rbfi.rbf_weights[i] * rbfi.rbf_basis(x, rbfi.x[i])
     end
 
-    val_poly = rbfi.monomial_basis(x)
     poly = zero(eltype(T))
-    for i in eachindex(rbfi.monomial_weights)
-        poly += rbfi.monomial_weights[i] * val_poly[i]
+    if !isempty(rbfi.monomial_weights)
+        val_poly = rbfi.monomial_basis(x)
+        for i in eachindex(rbfi.monomial_weights)
+            poly += rbfi.monomial_weights[i] * val_poly[i]
+        end
     end
     return rbf + poly
 end
