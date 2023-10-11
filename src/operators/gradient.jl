@@ -9,10 +9,7 @@ end
 
 # convienience constructors
 function gradient(
-    data::AbstractVector{D},
-    basis::B=PHS(3; poly_deg=2);
-    k::T=autoselect_k(data, basis),
-    sparse=true,
+    data::AbstractVector{D}, basis::B=PHS(3; poly_deg=2); k::T=autoselect_k(data, basis)
 ) where {D<:AbstractArray,B<:AbstractRadialBasis,T<:Int}
     f = ntuple(length(first(data))) do dim
         return let dim = dim
@@ -20,7 +17,7 @@ function gradient(
         end
     end
     ℒ = Gradient(f)
-    return RadialBasisOperator(ℒ, data, basis; k=k, sparse=sparse)
+    return RadialBasisOperator(ℒ, data, basis; k=k)
 end
 
 function gradient(
@@ -28,7 +25,6 @@ function gradient(
     centers::AbstractVector{D},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-    sparse=true,
 ) where {D<:AbstractArray,B<:AbstractRadialBasis,T<:Int}
     f = ntuple(length(first(data))) do dim
         return let dim = dim
@@ -36,7 +32,7 @@ function gradient(
         end
     end
     ℒ = Gradient(f)
-    return RadialBasisOperator(ℒ, data, centers, basis; k=k, sparse=sparse)
+    return RadialBasisOperator(ℒ, data, centers, basis; k=k)
 end
 
 function RadialBasisOperator(
@@ -44,12 +40,11 @@ function RadialBasisOperator(
     data::AbstractVector{D},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-    sparse=true,
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
     TD = eltype(D)
     adjl = find_neighbors(data, k)
     N = length(adjl)
-    weights = ntuple(_ -> _allocate_weights(TD, N, N, k; sparse=sparse), length(ℒ.ℒ))
+    weights = ntuple(_ -> _allocate_weights(TD, N, N, k), length(ℒ.ℒ))
     return RadialBasisOperator(ℒ, weights, data, data, adjl, basis)
 end
 
@@ -59,13 +54,12 @@ function RadialBasisOperator(
     centers::AbstractVector{D},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-    sparse=true,
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
     TD = eltype(D)
     adjl = find_neighbors(data, centers, k)
     Na = length(adjl)
     Nd = length(data)
-    weights = ntuple(_ -> _allocate_weights(TD, Na, Nd, k; sparse=sparse), length(ℒ.ℒ))
+    weights = ntuple(_ -> _allocate_weights(TD, Na, Nd, k), length(ℒ.ℒ))
     return RadialBasisOperator(ℒ, weights, data, centers, adjl, basis)
 end
 
