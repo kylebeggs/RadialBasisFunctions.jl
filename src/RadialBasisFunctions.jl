@@ -4,6 +4,7 @@ using NearestNeighbors
 using SymRCM
 using LinearAlgebra
 using LoopVectorization
+using ChunkSplitters
 using SparseArrays
 using StaticArrays
 using Statistics

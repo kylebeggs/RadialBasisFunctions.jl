@@ -24,17 +24,12 @@ end
 
 # convienience constructors
 function RadialBasisOperator(
-    ℒ,
-    data::AbstractVector{D},
-    basis::B=PHS(3; poly_deg=2);
-    k::T=autoselect_k(data, basis),
-    sparse=true,
+    ℒ, data::AbstractVector{D}, basis::B=PHS(3; poly_deg=2); k::T=autoselect_k(data, basis)
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
-    TD = eltype(D)
     adjl = find_neighbors(data, k)
     Na = length(adjl)
     Nd = length(data)
-    weights = _allocate_weights(TD, Na, Nd, k; sparse=sparse)
+    weights = spzeros(eltype(D), Na, Nd)
     return RadialBasisOperator(ℒ, weights, data, data, adjl, basis)
 end
 
@@ -44,13 +39,11 @@ function RadialBasisOperator(
     centers::AbstractVector{D},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-    sparse=true,
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
-    TD = eltype(D)
     adjl = find_neighbors(data, centers, k)
     Na = length(adjl)
     Nd = length(data)
-    weights = _allocate_weights(TD, Na, Nd, k; sparse=sparse)
+    weights = spzeros(eltype(D), Na, Nd)
     return RadialBasisOperator(ℒ, weights, data, centers, adjl, basis)
 end
 
@@ -149,19 +142,11 @@ end
 
 # update weights
 function _build_weights(ℒ, op::RadialBasisOperator)
-    if op.weights isa Vector{<:Vector}
-        return _build_weight_vec(ℒ, op.data, op.adjl, op.basis)
-    else
-        return _build_weightmx(ℒ, op.data, op.centers, op.adjl, op.basis)
-    end
+    return _build_weightmx(ℒ, op.data, op.centers, op.adjl, op.basis)
 end
 
 function _build_weights(ℒ, op::RadialBasisOperator{<:VectorValuedOperator})
-    if first(op.weights) isa Vector{<:Vector}
-        return _build_weight_vec(ℒ, op.data, op.adjl, op.basis)
-    else
-        return _build_weightmx(ℒ, op.data, op.centers, op.adjl, op.basis)
-    end
+    return _build_weightmx(ℒ, op.data, op.centers, op.adjl, op.basis)
 end
 
 function update_weights!(op::RadialBasisOperator)
@@ -196,11 +181,10 @@ end
 # pretty printing
 function Base.show(io::IO, op::RadialBasisOperator)
     println(io, "RadialBasisOperator")
-    println(io, "  └─Operator: " * print_op(op.ℒ))
-    println(io, "  └─Data type: ", typeof(first(op.data)))
-    println(io, "  └─Number of points: ", length(op.data))
-    println(io, "  └─Dimensions: ", length(first(op.data)))
-    println(io, "  └─Stencil size: ", length(first(op.adjl)))
+    println(io, "  ├─Operator: " * print_op(op.ℒ))
+    println(io, "  ├─Data type: ", typeof(first(op.data)))
+    println(io, "  ├─Number of points: ", length(op.data))
+    println(io, "  ├─Stencil size: ", length(first(op.adjl)))
     return println(
         io,
         "  └─Basis: ",

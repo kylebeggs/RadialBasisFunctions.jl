@@ -46,11 +46,11 @@ end
 
 function Base.show(io::IO, rbf::Gaussian)
     print(io, "Gaussian, exp(-(ε*r)²)")
-    print(io, "\n└─Shape factor: ε = $(rbf.ε)")
+    print(io, "\n  ├─Shape factor: ε = $(rbf.ε)")
     if rbf.poly_deg < 0
-        print(io, "\n  No Monomial augmentation")
+        print(io, "\n  └─No Monomial augmentation")
     else
-        print(io, "\n└─Polynomial augmentation: degree $(rbf.poly_deg)")
+        print(io, "\n  └─Polynomial augmentation: degree $(rbf.poly_deg)")
     end
 end
 

@@ -63,7 +63,7 @@ function scale_cloud(data)
     return data ./ furthest_point
 end
 
-_allocate_weights(m, n, k; sparse=true) = _allocate_weights(Float64, m, n, k; sparse=sparse)
-function _allocate_weights(T, m, n, k; sparse=true)
-    return sparse ? spzeros(T, m, n) : [zeros(T, k) for _ in 1:m]
+_allocate_weights(m, n, k) = _allocate_weights(Float64, m, n, k)
+function _allocate_weights(T, m, n, k)
+    return spzeros(T, m, n)
 end
