@@ -58,11 +58,11 @@ end
 
 function Base.show(io::IO, rbf::IMQ)
     print(io, "Inverse Multiquadrics, 1/sqrt((r*ε)²+1)")
-    print(io, "\n└─Shape factor: ε = $(rbf.ε)")
+    print(io, "\n  ├─Shape factor: ε = $(rbf.ε)")
     if rbf.poly_deg < 0
-        print(io, "\n  No Monomial augmentation")
+        print(io, "\n  └─No Monomial augmentation")
     else
-        print(io, "\n└─Polynomial augmentation: degree $(rbf.poly_deg)")
+        print(io, "\n  └─Polynomial augmentation: degree $(rbf.poly_deg)")
     end
 end
 

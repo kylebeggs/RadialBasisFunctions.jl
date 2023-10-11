@@ -52,8 +52,8 @@ end
 # pretty printing
 function Base.show(io::IO, op::RadialBasisInterp)
     println(io, "RadialBasisInterp")
-    println(io, "  └─Input type: ", typeof(first(op.x)))
-    println(io, "  └─Output type: ", typeof(first(op.y)))
+    println(io, "  ├─Input type: ", typeof(first(op.x)))
+    println(io, "  ├─Output type: ", typeof(first(op.y)))
     println(io, "  └─Number of points: ", length(op.x))
     return println(
         io,
