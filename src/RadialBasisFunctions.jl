@@ -78,6 +78,7 @@ using PrecompileTools
 
         # interpolation
         interp = RadialBasisInterp(x, y)
+        yy = interp([SVector(rand(2)), SVector(rand(2))])
 
         # basis functions
         imq = IMQ(1)
