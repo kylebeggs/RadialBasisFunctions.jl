@@ -7,7 +7,6 @@ using LoopVectorization
 using ChunkSplitters
 using SparseArrays
 using StaticArrays
-using Statistics
 using Distances
 using Combinatorics
 

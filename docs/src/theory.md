@@ -14,7 +14,7 @@ There are several types of RBFs to choose from, some with a tunable shape parame
 | -------------------- | -------------------------------------- |
 | Polyharmonic Spline  | ``\phi(r) = r^n`` where ``n=1,3,5,7,\dots``                      |
 | Multiquadric             |    ``\phi(r)=\sqrt{ (r \varepsilon)^{2}+ 1 }``                                    |
-| Inverse Multiquadric | ``\phi(r) = \frac{1}{\sqrt{(r \varepsilon)^2+1}}`` |
+| Inverse Multiquadric | ``\phi(r) = 1 / \sqrt{(r \varepsilon)^2+1}}`` |
 | Gaussian             | ``\phi(r) = e^{-(r \varepsilon)^2}``               |
 
 ## Augmenting with Monomials
@@ -92,13 +92,31 @@ The original RBF method employing the Kansa approach which connects all the node
 
 ## Constructing an Operator
 
-In the RBF-FD, a stencil is built to approximate derivatives using the same neighborhoods/subdomains of ``N`` points. For example, if ``\mathcal{L}`` represents a linear differential operator, one can express the differentiation of the field variable ``u`` at the center of the subdomain ``\mathbf{x}_{c}`` in terms of weights ``\mathbf{w}_{i}`` and the field variable values on all the nodes within the subdomain as
+In the Radial Basis Function - Finite Difference method (RBF-FD), a stencil is built to approximate derivatives using the same neighborhoods/subdomains of $N$ points. This is used in the [[MeshlessMultiphysics.jl]] package. For example, if ``\mathcal{L}`` represents a linear differential operator, one can express the differentiation of the field variable ``u`` at the center of the subdomain ``\mathbf{x}_{c}`` in terms of some weights ``\mathbf{w}`` and the field variable values on all the nodes within the subdomain as
 
 ```math
-\mathcal{L}u(\mathbf{x}_{c})=\sum_{i=1}^{N}w_{i}u(\mathbf{x}_{i})
+\mathcal{L}u(\mathbf{x}_{c}) = \sum_{i=1}^{N}w_{i}u(\mathbf{x}_{i})
 ```
 
-After some algebraic manipulation and substitution using equations, one arrives at a linear system for the weights ``\mathbf{w}`` as
+We can find $\mathbf{w}$ by satisfying
+
+```math
+\sum_{i=1}^{N}w_{i}\phi_{j}(\mathbf{x}_{i}) = \mathcal{L}\phi_{j}(\mathbf{x}_{c})
+```
+
+for each $\phi_{j}$ where $j=1,\dots, N$ and if you wish to augment with monomials, we also must satisfy
+
+```math
+\sum_{i=1}^{N_{p}}\lambda_{i}p_{j}(\mathbf{x}_{i}) = \mathcal{L}p_{j}(\mathbf{x}_{c})
+```
+
+which leads to an overdetermined problem
+
+```math
+\mathrm{min} \left( \frac{1}{2} \mathbf{w}\mathbf{A}^{\intercal}\mathbf{w} - \mathbf{w}^{\intercal} \mathcal{L}\phi \right), \text{ subject to } \mathbf{P}^{\intercal}\mathbf{w}=\mathcal{L}\mathbf{p}
+```
+
+which is practically solved as a linear system for the weights $\mathbf{w}$ as
 
 ```math
 \begin{bmatrix}\mathbf{A} & \mathbf{P} \\
@@ -126,8 +144,8 @@ where ``\boldsymbol{\lambda}`` are treated as Lagrange multipliers and are disc
 \hspace{2em}
 \mathcal{L}\mathbf{p}=
 \begin{bmatrix}
-\mathcal{L}\mathbf{p}_{1}(\mathbf{x}_{c}) \\
+\mathcal{L}p_{1}(\mathbf{x}_{c}) \\
 \vdots \\
-\mathcal{L}\mathbf{p}_{N_{p}}(\mathbf{x}_{c})
+\mathcal{L}p_{N_{p}}(\mathbf{x}_{c})
 \end{bmatrix}
 ```

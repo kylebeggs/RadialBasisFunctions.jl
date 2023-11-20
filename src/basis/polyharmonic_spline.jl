@@ -173,9 +173,9 @@ end
 function Base.show(io::IO, rbf::R) where {R<:AbstractPHS}
     print(io, print_basis(rbf))
     if rbf.poly_deg < 0
-        print(io, "\n  └─No Monomial augmentation")
+        print(io, "\n└─No Monomial augmentation")
     else
-        print(io, "\n  └─Polynomial augmentation: degree $(rbf.poly_deg)")
+        print(io, "\n└─Polynomial augmentation: degree $(rbf.poly_deg)")
     end
 end
 
