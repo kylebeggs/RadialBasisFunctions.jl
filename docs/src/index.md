@@ -20,7 +20,7 @@ Currently, we support the following types of RBFs (all have polynomial augmentat
 | Type                 | Function, $\phi(r)$                    |
 | -------------------- | -------------------------------------- |
 | Polyharmonic Spline  | $r^n$ where $n=1,3,5,7$          |
-| Inverse Multiquadric | $\frac{1}{\sqrt{(r \varepsilon)^2+1}}$ |
+| Inverse Multiquadric | $1 / \sqrt{(r \varepsilon)^2+1}$ |
 | Gaussian             | $e^{-(r \varepsilon)^2}$               |
 
 
