@@ -19,10 +19,10 @@ include("gaussian.jl")
 include("monomial.jl")
 
 function ∂(basis::B, order::T, dim::T) where {T<:Int,B<:AbstractRadialBasis}
-    return ∂(basis, Val{order}(), dim)
+    return ∂(basis, Val(order), dim)
 end
-∂(basis::B, dim::T) where {T<:Int,B} = ∂(basis, Val{1}(), dim)
-∂²(basis::B, dim::T) where {T<:Int,B} = ∂(basis, Val{2}(), dim)
+∂(basis::B, dim::T) where {T<:Int,B} = ∂(basis, Val(1), dim)
+∂²(basis::B, dim::T) where {T<:Int,B} = ∂(basis, Val(2), dim)
 
 # pretty printing
 unicode_order(::Val{1}) = ""
