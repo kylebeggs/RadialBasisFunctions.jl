@@ -66,9 +66,6 @@ invalidate_cache(op::RadialBasisOperator) = op.valid_cache[] = false
 validate_cache(op::RadialBasisOperator) = op.valid_cache[] = true
 is_cache_valid(op::RadialBasisOperator) = op.valid_cache[]
 
-# for operator types such as Partial, Gradient, Laplacian, etc...
-(op::AbstractOperator)(x) = op.ℒ(x)
-
 # dispatches for evaluation
 _eval_op(op::RadialBasisOperator, x::AbstractVector) = _eval_op(op.weights, x)
 
@@ -141,16 +138,8 @@ function LinearAlgebra.mul!(
 end
 
 # update weights
-function _build_weights(ℒ, op::RadialBasisOperator)
-    return _build_weightmx(ℒ, op.data, op.centers, op.adjl, op.basis)
-end
-
-function _build_weights(ℒ, op::RadialBasisOperator{<:VectorValuedOperator})
-    return _build_weightmx(ℒ, op.data, op.centers, op.adjl, op.basis)
-end
-
 function update_weights!(op::RadialBasisOperator)
-    op.weights .= _build_weights(op.ℒ, op)
+    op.weights .= _build_weights(op.ℒ.ℒ, op)
     validate_cache(op)
     return nothing
 end

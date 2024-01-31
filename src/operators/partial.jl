@@ -3,7 +3,7 @@
 
 Builds an operator for a first order partial derivative.
 """
-struct Partial{L<:Function,T} <: ScalarValuedOperator
+struct Partial{L<:Function,T<:Int} <: ScalarValuedOperator
     ℒ::L
     order::T
     dim::T
@@ -40,4 +40,4 @@ function partial(
 end
 
 # pretty printing
-print_op(op::Partial) = "∂ⁿ/∂xᵢ (n = $(op.order), i = $(op.dim))"
+print_op(op::Partial) = "∂ⁿf/∂xᵢ (n = $(op.order), i = $(op.dim))"

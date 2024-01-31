@@ -66,4 +66,4 @@ end
 Base.size(op::RadialBasisOperator{<:Gradient}) = size(first(op.weights))
 
 # pretty printing
-print_op(op::Gradient) = "Gradient (∇)"
+print_op(op::Gradient) = "Gradient (∇f)"
