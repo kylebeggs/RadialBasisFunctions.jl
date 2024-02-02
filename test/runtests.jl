@@ -24,6 +24,10 @@ end
     include("operators/gradient.jl")
 end
 
+@safetestset "Directional Derivative" begin
+    include("operators/directional.jl")
+end
+
 @safetestset "Laplacian" begin
     include("operators/laplacian.jl")
 end
