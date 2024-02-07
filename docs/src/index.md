@@ -10,9 +10,10 @@ This package intends to provide functions for all things regarding Radial Basis 
 
 * Interpolation
 * Linear Operators
-  * Partial derivative ($\partial$)
-  * Laplacian ($\nabla^2$, $\Delta$)
-  * Gradient ($\nabla$)
+  * Partial derivative ($\partial f$)
+  * Laplacian ($\nabla^2 f$, $\Delta f$)
+  * Gradient ($\nabla f$)
+  * Directional Derivative ($\nabla f \cdot \mathbf{v}$)
   * Support for custom / user supplied operators ($\mathcal{L}$)
 
 Currently, we support the following types of RBFs (all have polynomial augmentation by default, but is optional)
