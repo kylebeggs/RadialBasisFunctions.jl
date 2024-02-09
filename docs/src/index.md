@@ -39,8 +39,8 @@ Simply install the latest stable release using Julia's package manager:
 
 * Adaptive operators and interpolation. Adding / removing / modifying points and automatically updating the weights without a complete recalculation.
 * Add more built-in operator combinations that will allow you to lazily construct operators such as
-  * divergence ($\operatorname{div}$)
-  * curl ($\nabla \times$)
+  * divergence ($\textrm{div} \mathbf{F}$ or $\nabla \cdot \mathbf{F}$)
+  * curl ($\nabla \times \mathbf{F}$)
 
 ## Current Limitations
 
