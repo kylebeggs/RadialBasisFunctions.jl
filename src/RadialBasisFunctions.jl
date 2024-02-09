@@ -1,14 +1,13 @@
 module RadialBasisFunctions
 
-using NearestNeighbors
-using SymRCM
-using LinearAlgebra
-using LoopVectorization
 using ChunkSplitters
-using SparseArrays
-using StaticArrays
-using Distances
 using Combinatorics
+using Distances
+using LinearAlgebra
+using NearestNeighbors
+using SparseArrays
+using StaticArraysCore
+using SymRCM
 
 include("basis/basis.jl")
 export AbstractRadialBasis
@@ -44,9 +43,6 @@ include("operators/operator_combinations.jl")
 
 include("interpolation.jl")
 export RadialBasisInterp
-
-#test
-export ∂test, ∂exponents, build_monomial_basis, pascals_triangle, monomial_recursive_list
 
 const Δ = ∇² # some people like this notation for the Laplacian
 const DIV0_OFFSET = 1e-8
