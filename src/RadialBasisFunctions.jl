@@ -1,45 +1,15 @@
 module RadialBasisFunctions
 
-using NearestNeighbors
-using SymRCM
-using LinearAlgebra
-using LoopVectorization
 using ChunkSplitters
-using SparseArrays
-using StaticArrays
-using Distances
 using Combinatorics
+using Distances
+using LinearAlgebra
+using NearestNeighbors
+using SparseArrays
+using StaticArraysCore
+using SymRCM
 
 include("basis/basis.jl")
-include("utils.jl")
-include("linalg/stencil.jl")
-
-include("operators/operators.jl")
-include("operators/partial.jl")
-include("operators/laplacian.jl")
-include("operators/gradient.jl")
-include("operators/monomial.jl")
-include("operators/operator_combinations.jl")
-
-include("interpolation.jl")
-
-const Δ = ∇² # some people like this notation for the Laplacian
-const DIV0_OFFSET = 1e-8
-
-# operators
-export RadialBasisOperator
-
-# scalar valued
-export Partial, partial
-export Laplacian, laplacian
-
-# vector valued
-export Gradient, gradient
-
-# interpolation
-export RadialBasisInterp
-
-# bases
 export AbstractRadialBasis
 export RadialBasisFunction
 export AbstractPHS, PHS, PHS1, PHS3, PHS5, PHS7
@@ -47,14 +17,35 @@ export IMQ
 export Gaussian
 export MonomialBasis
 
-# utility functions
+include("utils.jl")
 export find_neighbors, reorder_points!
 
-# linear algebra
-export _build_weightmx, _build_collocation_matrix!, _build_rhs!, _build_stencil!
+include("linalg/stencil.jl")
 
-#test
-export ∂test, ∂exponents, build_monomial_basis, pascals_triangle, monomial_recursive_list
+include("operators/operators.jl")
+export RadialBasisOperator
+
+include("operators/partial.jl")
+export Partial, partial
+
+include("operators/laplacian.jl")
+export Laplacian, laplacian
+
+include("operators/gradient.jl")
+export Gradient, gradient
+
+include("operators/directional.jl")
+export Directional, directional
+
+include("operators/monomial.jl")
+
+include("operators/operator_combinations.jl")
+
+include("interpolation.jl")
+export RadialBasisInterp
+
+const Δ = ∇² # some people like this notation for the Laplacian
+const DIV0_OFFSET = 1e-8
 
 using PrecompileTools
 @setup_workload begin

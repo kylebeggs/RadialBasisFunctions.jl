@@ -1,11 +1,8 @@
-function _build_weightmx(
-    ℒ,
-    data::AbstractVector{D},
-    centers::AbstractVector{D},
-    adjl::Vector{Vector{T}},
-    basis::B;
-    nchunks=Threads.nthreads(),
-) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+function _build_weights(ℒ, op; nchunks=Threads.nthreads())
+    data = op.data
+    centers = op.centers
+    adjl = op.adjl
+    basis = op.basis
     TD = eltype(first(data))
     dim = length(first(data)) # dimension of data
     nmon = binomial(dim + basis.poly_deg, basis.poly_deg)

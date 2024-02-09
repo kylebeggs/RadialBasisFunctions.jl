@@ -26,4 +26,4 @@ function laplacian(
 end
 
 # pretty printing
-print_op(op::Laplacian) = "Laplacian (∇² or Δ)"
+print_op(op::Laplacian) = "Laplacian (∇²f or Δf)"

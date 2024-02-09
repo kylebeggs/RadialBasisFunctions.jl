@@ -10,9 +10,10 @@ This package intends to provide functions for all things regarding Radial Basis 
 
 * Interpolation
 * Linear Operators
-  * Partial derivative ($\partial$)
-  * Laplacian ($\nabla^2$, $\Delta$)
-  * Gradient ($\nabla$)
+  * Partial derivative ($\partial f$)
+  * Laplacian ($\nabla^2 f$, $\Delta f$)
+  * Gradient ($\nabla f$)
+  * Directional Derivative ($\nabla f \cdot \mathbf{v}$)
   * Support for custom / user supplied operators ($\mathcal{L}$)
 
 Currently, we support the following types of RBFs (all have polynomial augmentation by default, but is optional)
@@ -38,8 +39,8 @@ Simply install the latest stable release using Julia's package manager:
 
 * Adaptive operators and interpolation. Adding / removing / modifying points and automatically updating the weights without a complete recalculation.
 * Add more built-in operator combinations that will allow you to lazily construct operators such as
-  * divergence
-  * curl
+  * divergence ($\operatorname{div}$)
+  * curl ($\nabla \times$)
 
 ## Current Limitations
 

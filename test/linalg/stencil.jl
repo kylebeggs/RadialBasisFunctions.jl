@@ -27,7 +27,7 @@ end
 
 @testset "Coefficient Matrix" begin
     A = Symmetric(zeros(n, n))
-    _build_collocation_matrix!(A, x, rb, mb, k)
+    RBF._build_collocation_matrix!(A, x, rb, mb, k)
     @testset "RBFs" begin
         @test A[1, 2] ≈ (sqrt(sum((x[1] .- x[2]) .^ 2)))^3
         @test A[1, 3] ≈ (sqrt(sum((x[1] .- x[3]) .^ 2)))^3
@@ -43,7 +43,7 @@ end
 @testset "Right-hand side" begin
     b = zeros(n)
     center = SVector(0.0, 0.0)
-    _build_rhs!(b, Lrb, Lmb, x, center, rb, k)
+    RBF._build_rhs!(b, Lrb, Lmb, x, center, rb, k)
     @testset "RBFs" begin
         @test b[1] ≈ Lrb(center, x[1])
         @test b[2] ≈ Lrb(center, x[2])
