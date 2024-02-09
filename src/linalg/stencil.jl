@@ -1,5 +1,8 @@
 function _build_weights(ℒ, op; nchunks=Threads.nthreads())
-    (; data, centers, adjl, basis) = op
+    data = op.data
+    centers = op.centers
+    adjl = op.adjl
+    basis = op.basis
     TD = eltype(first(data))
     dim = length(first(data)) # dimension of data
     nmon = binomial(dim + basis.poly_deg, basis.poly_deg)

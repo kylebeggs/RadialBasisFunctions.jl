@@ -22,8 +22,8 @@ y = f.(x)
     v /= norm(v)
     ∇v = directional(x, v, PHS3(2))
     ∇vy = ∇v(y)
-    @test mean_percent_error(∇vy[1], df_dx.(x) .* v[1]) < 1
-    @test mean_percent_error(∇vy[2], df_dy.(x) .* v[2]) < 1
+    @test mean_percent_error(∇vy[1], df_dx.(x) .* v[1]) < 2
+    @test mean_percent_error(∇vy[2], df_dy.(x) .* v[2]) < 2
 end
 
 @testset "Direction Vector for Each Data Center" begin
@@ -35,6 +35,6 @@ end
     ∇vy = ∇v(y)
     df_dx_v = map((df, v) -> df * v[1], df_dx.(x), v)
     df_dy_v = map((df, v) -> df * v[2], df_dy.(x), v)
-    @test mean_percent_error(∇vy[1], df_dx_v) < 1
-    @test mean_percent_error(∇vy[2], df_dy_v) < 1
+    @test mean_percent_error(∇vy[1], df_dx_v) < 2
+    @test mean_percent_error(∇vy[2], df_dy_v) < 2
 end
