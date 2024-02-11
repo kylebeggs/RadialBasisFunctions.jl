@@ -10,15 +10,15 @@ This package intends to provide tools for all things regarding Radial Basis Func
 
 | Feature | Status |
 | ------- | ------ |
-| Interpolation | :heavy_check_mark: |
-| Partial derivative ($\partial f$) | :heavy_check_mark: |
-| Laplacian ($\nabla^2 f$, $\Delta f$) | :heavy_check_mark: |
-| Gradient ($\nabla f$) | :heavy_check_mark: |
-| Directional Derivative ($\nabla f \cdot v$) | :heavy_check_mark: |
-| Custom / user supplied operators ($\mathcal{L}$) | :heavy_check_mark: |
-| divergence ($\textrm{div} \mathbf{F}$ or $\nabla \cdot \mathbf{F}$) | :x: |
-| curl ($\nabla \times \mathbf{F}$) | :x: |
-| Reduced Order Models | :x: |
+| Interpolation | ✅ |
+| Partial derivative ($\partial f$) | ✅ |
+| Laplacian ($\nabla^2 f$, $\Delta f$) | ✅ |
+| Gradient ($\nabla f$) | ✅ |
+| Directional Derivative ($\nabla f \cdot v$) | ✅ |
+| Custom / user supplied operators ($\mathcal{L}$) | ✅ |
+| divergence ($\textrm{div} \mathbf{F}$ or $\nabla \cdot \mathbf{F}$) | ❌ |
+| curl ($\nabla \times \mathbf{F}$) | ❌ |
+| Reduced Order Models | ❌ |
 
 Currently, we support the following types of RBFs (all have polynomial augmentation by default, but is optional)
 

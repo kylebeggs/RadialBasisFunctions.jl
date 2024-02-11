@@ -6,15 +6,19 @@ CurrentModule = RadialBasisFunctions
 
 Documentation for [RadialBasisFunctions](https://github.com/kylebeggs/RadialBasisFunctions.jl).
 
-This package intends to provide functions for all things regarding Radial Basis Functions (RBF). This includes
+This package intends to provide tools for all things regarding Radial Basis Functions (RBF). 
 
-* Interpolation
-* Linear Operators
-  * Partial derivative ($\partial f$)
-  * Laplacian ($\nabla^2 f$, $\Delta f$)
-  * Gradient ($\nabla f$)
-  * Directional Derivative ($\nabla f \cdot \mathbf{v}$)
-  * Support for custom / user supplied operators ($\mathcal{L}$)
+| Feature | Status |
+| ------- | ------ |
+| Interpolation | ✅ |
+| Partial derivative ($\partial f$) | ✅ |
+| Laplacian ($\nabla^2 f$, $\Delta f$) | ✅ |
+| Gradient ($\nabla f$) | ✅ |
+| Directional Derivative ($\nabla f \cdot v$) | ✅ |
+| Custom / user supplied operators ($\mathcal{L}$) | ✅ |
+| divergence ($\textrm{div} \mathbf{F}$ or $\nabla \cdot \mathbf{F}$) | ❌ |
+| curl ($\nabla \times \mathbf{F}$) | ❌ |
+| Reduced Order Models | ❌ |
 
 Currently, we support the following types of RBFs (all have polynomial augmentation by default, but is optional)
 
