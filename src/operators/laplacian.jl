@@ -1,7 +1,7 @@
 """
     Laplacian <: ScalarValuedOperator
 
-Builds an operator for the sum of the second derivatives w.r.t. each independent variable.
+Operator for the sum of the second derivatives w.r.t. each independent variable.
 """
 struct Laplacian{L<:Function} <: ScalarValuedOperator
     ℒ::L
@@ -17,12 +17,12 @@ end
 
 function laplacian(
     data::AbstractVector{D},
-    centers::AbstractVector{D},
+    eval_points::AbstractVector{D},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
     ℒ = Laplacian(∇²)
-    return RadialBasisOperator(ℒ, data, centers, basis; k=k)
+    return RadialBasisOperator(ℒ, data, eval_points, basis; k=k)
 end
 
 # pretty printing

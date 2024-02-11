@@ -1,8 +1,18 @@
+"""
+    Directional <: VectorValuedOperator
+
+Operator for the directional derivative, or the inner product of the gradient and a direction vector.
+"""
 struct Directional{L<:NTuple,T} <: VectorValuedOperator
     ℒ::L
     v::T
 end
 
+"""
+    function directional(data, v, basis; k=autoselect_k(data, basis))
+
+Builds a `RadialBasisOperator` where the operator is the directional derivative, `Directional`.
+"""
 function directional(
     data::AbstractVector{D},
     v::AbstractVector,

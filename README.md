@@ -6,15 +6,19 @@
 [![License File](https://img.shields.io/badge/license-MIT-blue)](https://github.com/kylebeggs/RadialBasisFunctions.jl/blob/master/LICENSE)
 [![DOI](https://zenodo.org/badge/634682663.svg)](https://zenodo.org/badge/latestdoi/634682663)
 
-This package intends to provide functions for all things regarding Radial Basis Functions (RBF). This includes
+This package intends to provide tools for all things regarding Radial Basis Functions (RBF). 
 
-* Interpolation
-* Linear Operators
-  * Partial derivative ($\partial f$)
-  * Laplacian ($\nabla^2 f$, $\Delta f$)
-  * Gradient ($\nabla f$)
-  * Directional Derivative ($\nabla f \cdot v$)
-  * Support for custom / user supplied operators ($\mathcal{L}$)
+| Feature | Status |
+| ------- | ------ |
+| Interpolation | :heavy_check_mark: |
+| Partial derivative ($\partial f$) | :heavy_check_mark: |
+| Laplacian ($\nabla^2 f$, $\Delta f$) | :heavy_check_mark: |
+| Gradient ($\nabla f$) | :heavy_check_mark: |
+| Directional Derivative ($\nabla f \cdot v$) | :heavy_check_mark: |
+| Custom / user supplied operators ($\mathcal{L}$) | :heavy_check_mark: |
+| divergence ($\textrm{div} \mathbf{F}$ or $\nabla \cdot \mathbf{F}$) | :x: |
+| curl ($\nabla \times \mathbf{F}$) | :x: |
+| Reduced Order Models | :x: |
 
 Currently, we support the following types of RBFs (all have polynomial augmentation by default, but is optional)
 
@@ -33,15 +37,6 @@ Simply install the latest stable release using Julia's package manager:
 ```julia
 ] add RadialBasisFunctions
 ```
-
-## Planned Features
-
-* Adaptive operators and interpolation. Adding / removing / modifying points and automatically updating the weights without a complete recalculation.
-* Add more built-in operator combinations that will allow you to lazily construct operators such as
-  * divergence ($\textrm{div} \mathbf{F}$ or $\nabla \cdot \mathbf{F}$)
-  * curl ($\nabla \times \mathbf{F}$)
-
-and plans to add more...please submit an issue or pull request if you'd like to see one added!
 
 ## Current Limitations
 

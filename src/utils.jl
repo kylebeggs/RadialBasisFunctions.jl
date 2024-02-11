@@ -4,9 +4,9 @@ function find_neighbors(data::AbstractVector, k::Int)
     return adjl
 end
 
-function find_neighbors(data::AbstractVector, centers::AbstractVector, k::Int)
+function find_neighbors(data::AbstractVector, eval_points::AbstractVector, k::Int)
     tree = KDTree(data)
-    adjl, _ = knn(tree, centers, k, true)
+    adjl, _ = knn(tree, eval_points, k, true)
     return adjl
 end
 

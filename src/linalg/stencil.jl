@@ -1,6 +1,6 @@
 function _build_weights(ℒ, op; nchunks=Threads.nthreads())
     data = op.data
-    centers = op.centers
+    eval_points = op.eval_points
     adjl = op.adjl
     basis = op.basis
     TD = eltype(first(data))
@@ -32,7 +32,7 @@ function _build_weights(ℒ, op; nchunks=Threads.nthreads())
             I[((i - 1) * k + 1):(i * k)] .= i
             d[ichunk] = data[adjl[i]]
             V[((i - 1) * k + 1):(i * k)] = @views _build_stencil!(
-                A[ichunk], b[ichunk], ℒrbf, ℒmon, d[ichunk], centers[i], basis, mon, k
+                A[ichunk], b[ichunk], ℒrbf, ℒmon, d[ichunk], eval_points[i], basis, mon, k
             )
         end
     end

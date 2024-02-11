@@ -11,14 +11,14 @@ struct RadialBasisOperator{L,W,D,C,A,B<:AbstractRadialBasis}
     ℒ::L
     weights::W
     data::D
-    centers::C
+    eval_points::C
     adjl::A
     basis::B
     valid_cache::Base.RefValue{Bool}
     function RadialBasisOperator(
-        ℒ::L, weights::W, data::D, centers::C, adjl::A, basis::B
+        ℒ::L, weights::W, data::D, eval_points::C, adjl::A, basis::B
     ) where {L,W,D,C,A,B<:AbstractRadialBasis}
-        return new{L,W,D,C,A,B}(ℒ, weights, data, centers, adjl, basis, Ref(false))
+        return new{L,W,D,C,A,B}(ℒ, weights, data, eval_points, adjl, basis, Ref(false))
     end
 end
 
@@ -36,15 +36,15 @@ end
 function RadialBasisOperator(
     ℒ,
     data::AbstractVector{D},
-    centers::AbstractVector{D},
+    eval_points::AbstractVector{D},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
-    adjl = find_neighbors(data, centers, k)
+    adjl = find_neighbors(data, eval_points, k)
     Na = length(adjl)
     Nd = length(data)
     weights = spzeros(eltype(D), Na, Nd)
-    return RadialBasisOperator(ℒ, weights, data, centers, adjl, basis)
+    return RadialBasisOperator(ℒ, weights, data, eval_points, adjl, basis)
 end
 
 # extend Base methods

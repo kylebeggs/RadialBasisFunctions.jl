@@ -10,6 +10,11 @@ struct Partial{L<:Function,T<:Int} <: ScalarValuedOperator
 end
 
 # convienience constructors
+"""
+    function partial(data, order, dim, basis; k=autoselect_k(data, basis))
+
+Builds a `RadialBasisOperator` where the operator is the partial derivative, `Partial`, of `order` with respect to `dim`.
+"""
 function partial(
     data::AbstractVector{D},
     order::T,
@@ -24,9 +29,14 @@ function partial(
     return RadialBasisOperator(ℒ, data, basis; k=k)
 end
 
+"""
+    function partial(data, eval_points, order, dim, basis; k=autoselect_k(data, basis))
+
+Builds a `RadialBasisOperator` where the operator is the partial derivative, `Partial`. The resulting operator will only evaluate at `eval_points`.
+"""
 function partial(
     data::AbstractVector{D},
-    centers::AbstractVector{D},
+    eval_points::AbstractVector{D},
     order::T,
     dim::T,
     basis::B=PHS(3; poly_deg=2);
@@ -36,7 +46,7 @@ function partial(
         x -> ∂(x, o, dim)
     end
     ℒ = Partial(f, order, dim)
-    return RadialBasisOperator(ℒ, data, centers, basis; k=k)
+    return RadialBasisOperator(ℒ, data, eval_points, basis; k=k)
 end
 
 # pretty printing

@@ -1,7 +1,7 @@
 """
     struct RadialBasisInterp
 
-Type for radial basis interpolation.
+Construct a radial basis interpolation.
 """
 struct RadialBasisInterp{X,Y,R,M,RB,MB}
     x::X
