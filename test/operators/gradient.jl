@@ -23,9 +23,8 @@ y = f.(x)
     @test mean_percent_error(∇y[2], df_dy.(x)) < 2
 end
 
-@testset "Different Data Centers" begin
+@testset "Different Evaluation Points" begin
     x2 = map(x -> SVector{2}(rand(2)), 1:100)
-    y2 = f.(x2)
     ∇ = gradient(x, x2, PHS(3; poly_deg=2))
     ∇y = ∇(y)
     @test mean_percent_error(∇y[1], df_dx.(x2)) < 2

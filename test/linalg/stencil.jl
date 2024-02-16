@@ -42,12 +42,12 @@ end
 
 @testset "Right-hand side" begin
     b = zeros(n)
-    center = SVector(0.0, 0.0)
-    RBF._build_rhs!(b, Lrb, Lmb, x, center, rb, k)
+    eval_point = SVector(0.0, 0.0)
+    RBF._build_rhs!(b, Lrb, Lmb, x, eval_point, rb, k)
     @testset "RBFs" begin
-        @test b[1] ≈ Lrb(center, x[1])
-        @test b[2] ≈ Lrb(center, x[2])
-        @test b[3] ≈ Lrb(center, x[3])
+        @test b[1] ≈ Lrb(eval_point, x[1])
+        @test b[2] ≈ Lrb(eval_point, x[2])
+        @test b[3] ≈ Lrb(eval_point, x[3])
     end
     @testset "Monomials" begin
         bb = zeros(3)

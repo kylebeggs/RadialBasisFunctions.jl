@@ -62,9 +62,8 @@ end
     end
 end
 
-@testset "Different Data Centers" begin
+@testset "Different Evaluation Points" begin
     x2 = map(x -> SVector{2}(rand(2)), 1:100)
-    y2 = f.(x2)
     ∂x = partial(x, x2, 1, 1, PHS(3; poly_deg=2))
     ∂y = partial(x, x2, 1, 2, PHS(3; poly_deg=2))
     @test mean_percent_error(∂x(y), df_dx.(x2)) < 2

@@ -46,13 +46,13 @@ function _build_stencil!(
     ℒrbf,
     ℒmon,
     data::AbstractVector{D},
-    center::D,
+    eval_point::D,
     basis::B,
     mon::MonomialBasis,
     k::Int,
 ) where {D<:AbstractArray,B<:AbstractRadialBasis}
     _build_collocation_matrix!(A, data, basis, mon, k)
-    _build_rhs!(b, ℒrbf, ℒmon, data, center, basis, k)
+    _build_rhs!(b, ℒrbf, ℒmon, data, eval_point, basis, k)
     return (A \ b)[1:k]
 end
 
@@ -75,18 +75,18 @@ function _build_collocation_matrix!(
 end
 
 function _build_rhs!(
-    b::AbstractVector, ℒrbf, ℒmon, data::AbstractVector{D}, center::D, basis::B, k::K
+    b::AbstractVector, ℒrbf, ℒmon, data::AbstractVector{D}, eval_point::D, basis::B, k::K
 ) where {D<:AbstractArray,B<:AbstractRadialBasis,K<:Int}
     # radial basis section
     @inbounds for i in eachindex(data)
-        b[i] = ℒrbf(center, data[i])
+        b[i] = ℒrbf(eval_point, data[i])
     end
 
     # monomial augmentation
     if basis.poly_deg > -1
         N = length(b)
         bmono = view(b, (k + 1):N)
-        ℒmon(bmono, center)
+        ℒmon(bmono, eval_point)
     end
 
     return nothing

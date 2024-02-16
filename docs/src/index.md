@@ -15,7 +15,7 @@ This package intends to provide tools for all things regarding Radial Basis Func
 | Laplacian ($\nabla^2 f$, $\Delta f$) | ✅ |
 | Gradient ($\nabla f$) | ✅ |
 | Directional Derivative ($\nabla f \cdot v$) | ✅ |
-| Custom / user supplied operators ($\mathcal{L}$) | ✅ |
+| Custom / user supplied ($\mathcal{L} f$) | ✅ |
 | divergence ($\textrm{div} \mathbf{F}$ or $\nabla \cdot \mathbf{F}$) | ❌ |
 | curl ($\nabla \times \mathbf{F}$) | ❌ |
 | Reduced Order Models | ❌ |
