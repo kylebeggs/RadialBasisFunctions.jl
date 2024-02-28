@@ -18,7 +18,7 @@ This package intends to provide tools for all things regarding Radial Basis Func
 | Custom / user supplied ($\mathcal{L} f$) | ✅ |
 | divergence ($\textrm{div} \mathbf{F}$ or $\nabla \cdot \mathbf{F}$) | ❌ |
 | curl ($\nabla \times \mathbf{F}$) | ❌ |
-| Reduced Order Models | ❌ |
+| Reduced Order Models (i.e. POD) | ❌ |
 
 Currently, we support the following types of RBFs (all have polynomial augmentation by default, but is optional)
 
@@ -38,13 +38,6 @@ Simply install the latest stable release using Julia's package manager:
 ```julia
 ] add RadialBasisFunctions
 ```
-
-## Planned Features
-
-* Adaptive operators and interpolation. Adding / removing / modifying points and automatically updating the weights without a complete recalculation.
-* Add more built-in operator combinations that will allow you to lazily construct operators such as
-  * divergence ($\textrm{div} \mathbf{F}$ or $\nabla \cdot \mathbf{F}$)
-  * curl ($\nabla \times \mathbf{F}$)
 
 ## Current Limitations
 

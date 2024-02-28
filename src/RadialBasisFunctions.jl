@@ -44,6 +44,9 @@ include("operators/operator_combinations.jl")
 include("interpolation.jl")
 export RadialBasisInterp
 
+include("operators/regridding.jl")
+export Interpolator, interpolator
+
 const Δ = ∇² # some people like this notation for the Laplacian
 const DIV0_OFFSET = 1e-8
 

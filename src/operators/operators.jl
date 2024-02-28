@@ -125,7 +125,6 @@ function LinearAlgebra.:⋅(
     return sum(op(x))
 end
 
-# TODO
 function LinearAlgebra.mul!(
     y::AbstractVector{<:Real},
     op::RadialBasisOperator{<:VectorValuedOperator},

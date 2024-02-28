@@ -23,10 +23,10 @@ function RadialBasisInterp(x, y, basis::B=PHS()) where {B<:AbstractRadialBasis}
     npoly = binomial(dim + basis.poly_deg, basis.poly_deg)
     n = k + npoly
     mon = MonomialBasis(dim, basis.poly_deg)
-    A = Symmetric(zeros(eltype(first(x)), n, n))
+    data_type = promote_type(eltype(first(x)), eltype(y))
+    A = Symmetric(zeros(data_type, n, n))
     _build_collocation_matrix!(A, x, basis, mon, k)
-    b = zeros(eltype(first(x)), n)
-    b[1:k] .= y
+    b = data_type[i < k ? y[i] : 0 for i in 1:n]
     w = A \ b
     return RadialBasisInterp(x, y, w[1:k], w[(k + 1):end], basis, mon)
 end
