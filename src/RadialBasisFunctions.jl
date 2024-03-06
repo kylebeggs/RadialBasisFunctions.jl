@@ -42,10 +42,10 @@ include("operators/monomial.jl")
 include("operators/operator_combinations.jl")
 
 include("interpolation.jl")
-export RadialBasisInterp
+export Interpolator
 
 include("operators/regridding.jl")
-export Interpolator, interpolator
+export Regrid, regrid
 
 const Δ = ∇² # some people like this notation for the Laplacian
 const DIV0_OFFSET = 1e-8
@@ -80,7 +80,7 @@ using PrecompileTools
             ∇²z = ∇²(z)
 
             # interpolation
-            interp = RadialBasisInterp(x, z, b)
+            interp = Interpolator(x, z, b)
             zz = interp([SVector{2}(rand(2)), SVector{2}(rand(2))])
         end
     end

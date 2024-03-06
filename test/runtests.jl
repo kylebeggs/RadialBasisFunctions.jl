@@ -36,6 +36,10 @@ end
     include("operators/interpolation.jl")
 end
 
+@safetestset "Regridding" begin
+    include("operators/regrid.jl")
+end
+
 @safetestset "Stencil" begin
     include("linalg/stencil.jl")
 end
