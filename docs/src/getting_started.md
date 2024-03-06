@@ -20,7 +20,7 @@ y = f.(x)
 and now we can build the interpolator
 
 ```@example overview
-interp = RadialBasisInterp(x, y)
+interp = Interpolator(x, y)
 ```
 
 and evaluate it at a new point
@@ -37,10 +37,10 @@ and compare the error
 abs.(y_true .- y_new)
 ```
 
-Wow! The error is numerically zero! Well... we set ourselves up for success here. `RadialBasisInterp` (along with `RadialBasisOperator`) has an optional argument to provide the type of radial basis including the degree of polynomial augmentation. The default basis is a cubic polyharmonic spline with 2nd degree polynomial augmentation (which the constructor is `PHS(3, poly_deg=2)`) and given the underlying function we are interpolating is a 2nd order polynomial itself, we are able to represent it exactly (up to machine precision). Let's see what happens when we only use 1st order polynomial augmentation
+Wow! The error is numerically zero! Well... we set ourselves up for success here. `Interpolator` (along with `RadialBasisOperator`) has an optional argument to provide the type of radial basis including the degree of polynomial augmentation. The default basis is a cubic polyharmonic spline with 2nd degree polynomial augmentation (which the constructor is `PHS(3, poly_deg=2)`) and given the underlying function we are interpolating is a 2nd order polynomial itself, we are able to represent it exactly (up to machine precision). Let's see what happens when we only use 1st order polynomial augmentation
 
 ```@example overview
-interp = RadialBasisInterp(x, y, PHS(3, poly_deg=1))
+interp = Interpolator(x, y, PHS(3, poly_deg=1))
 y_new = interp(x_new)
 abs.(y_true .- y_new)
 ```

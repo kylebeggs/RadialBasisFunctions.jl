@@ -11,6 +11,7 @@ This package intends to provide tools for all things regarding Radial Basis Func
 | Feature | Status |
 | ------- | ------ |
 | Interpolation | ✅ |
+| Regridding | ✅ |
 | Partial derivative ($\partial f$) | ✅ |
 | Laplacian ($\nabla^2 f$, $\Delta f$) | ✅ |
 | Gradient ($\nabla f$) | ✅ |
@@ -18,7 +19,7 @@ This package intends to provide tools for all things regarding Radial Basis Func
 | Custom / user supplied ($\mathcal{L} f$) | ✅ |
 | divergence ($\textrm{div} \mathbf{F}$ or $\nabla \cdot \mathbf{F}$) | ❌ |
 | curl ($\nabla \times \mathbf{F}$) | ❌ |
-| Reduced Order Models | ❌ |
+| Reduced Order Models (i.e. POD) | ❌ |
 
 Currently, we support the following types of RBFs (all have polynomial augmentation by default, but is optional)
 
@@ -47,4 +48,4 @@ Simply install the latest stable release using Julia's package manager:
 
     That said, we currently only support the second option here (`Vector{AbstractVector}`), but plan to support matrix inputs in the future.
 
-2. `RadialBasisInterp` uses all points, but there are plans to support local collocation / subdomains like the operators use.
+2. `Interpolator` uses all points, but there are plans to support local collocation / subdomains like the operators use.

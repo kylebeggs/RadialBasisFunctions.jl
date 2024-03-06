@@ -1,9 +1,9 @@
 """
-    struct RadialBasisInterp
+    struct Interpolator
 
 Construct a radial basis interpolation.
 """
-struct RadialBasisInterp{X,Y,R,M,RB,MB}
+struct Interpolator{X,Y,R,M,RB,MB}
     x::X
     y::Y
     rbf_weights::R
@@ -13,25 +13,25 @@ struct RadialBasisInterp{X,Y,R,M,RB,MB}
 end
 
 """
-    function RadialBasisInterp(x, y, basis::B=PHS())
+    function Interpolator(x, y, basis::B=PHS())
 
 Construct a radial basis interpolator.
 """
-function RadialBasisInterp(x, y, basis::B=PHS()) where {B<:AbstractRadialBasis}
+function Interpolator(x, y, basis::B=PHS()) where {B<:AbstractRadialBasis}
     dim = length(first(x))
     k = length(x)  # number of data in influence/support domain
     npoly = binomial(dim + basis.poly_deg, basis.poly_deg)
     n = k + npoly
     mon = MonomialBasis(dim, basis.poly_deg)
-    A = Symmetric(zeros(eltype(first(x)), n, n))
+    data_type = promote_type(eltype(first(x)), eltype(y))
+    A = Symmetric(zeros(data_type, n, n))
     _build_collocation_matrix!(A, x, basis, mon, k)
-    b = zeros(eltype(first(x)), n)
-    b[1:k] .= y
+    b = data_type[i < k ? y[i] : 0 for i in 1:n]
     w = A \ b
-    return RadialBasisInterp(x, y, w[1:k], w[(k + 1):end], basis, mon)
+    return Interpolator(x, y, w[1:k], w[(k + 1):end], basis, mon)
 end
 
-function (rbfi::RadialBasisInterp)(x::T) where {T}
+function (rbfi::Interpolator)(x::T) where {T}
     rbf = zero(eltype(T))
     for i in eachindex(rbfi.rbf_weights)
         rbf += rbfi.rbf_weights[i] * rbfi.rbf_basis(x, rbfi.x[i])
@@ -47,11 +47,11 @@ function (rbfi::RadialBasisInterp)(x::T) where {T}
     return rbf + poly
 end
 
-(rbfi::RadialBasisInterp)(x::Vector{<:AbstractVector}) = [rbfi(val) for val in x]
+(rbfi::Interpolator)(x::Vector{<:AbstractVector}) = [rbfi(val) for val in x]
 
 # pretty printing
-function Base.show(io::IO, op::RadialBasisInterp)
-    println(io, "RadialBasisInterp")
+function Base.show(io::IO, op::Interpolator)
+    println(io, "Interpolator")
     println(io, "├─Input type: ", typeof(first(op.x)))
     println(io, "├─Output type: ", typeof(first(op.y)))
     println(io, "├─Number of points: ", length(op.x))
