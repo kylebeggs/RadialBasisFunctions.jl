@@ -38,3 +38,17 @@ end
     @test mean_percent_error(∇vy[1], df_dx_v) < 2
     @test mean_percent_error(∇vy[2], df_dy_v) < 2
 end
+
+@testset "Different Evaluation Points" begin
+    x2 = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), 1:N)
+    v = map(1:length(x2)) do i
+        v = SVector{2}(rand(2))
+        return v /= norm(v)
+    end
+    ∇v = directional(x, x2, v, PHS3(2))
+    ∇vy = ∇v(y)
+    df_dx_v = map((df, v) -> df * v[1], df_dx.(x), v)
+    df_dy_v = map((df, v) -> df * v[2], df_dy.(x), v)
+    @test mean_percent_error(∇vy[1], df_dx_v) < 2
+    @test mean_percent_error(∇vy[2], df_dy_v) < 2
+end
