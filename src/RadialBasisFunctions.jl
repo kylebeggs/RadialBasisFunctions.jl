@@ -40,7 +40,7 @@ export Directional, directional
 include("operators/virtual.jl")
 export ∂virtual
 
-include("operators/monomial.jl")
+include("operators/monomial/monomial.jl")
 
 include("operators/operator_combinations.jl")
 
@@ -54,6 +54,7 @@ const Δ = ∇² # some people like this notation for the Laplacian
 const DIV0_OFFSET = 1e-8
 
 using PrecompileTools
+#=
 @setup_workload begin
     f(x) = 1 + sin(4 * x[1]) + cos(3 * x[1]) + sin(2 * x[2])
     x = map(x -> SVector{2}(rand(2)), 1:100)
@@ -88,5 +89,6 @@ using PrecompileTools
         end
     end
 end
+=#
 
 end # module
