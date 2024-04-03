@@ -40,8 +40,8 @@ function (rbfi::Interpolator)(x::T) where {T}
     poly = zero(eltype(T))
     if !isempty(rbfi.monomial_weights)
         val_poly = rbfi.monomial_basis(x)
-        for i in eachindex(rbfi.monomial_weights)
-            poly += rbfi.monomial_weights[i] * val_poly[i]
+        for (i, val) in enumerate(val_poly)
+            poly += rbfi.monomial_weights[i] * val
         end
     end
     return rbf + poly
@@ -59,6 +59,7 @@ function Base.show(io::IO, op::Interpolator)
         io,
         "└─Basis: ",
         print_basis(op.rbf_basis),
-        " with degree $(op.monomial_basis.deg) Monomial",
+        " with degree $(_get_deg(op.monomial_basis)) Monomial",
     )
 end
+_get_deg(::MonomialBasis{Dim,Deg}) where {Dim,Deg} = Deg
