@@ -21,9 +21,8 @@ y = f.(x)
     v = SVector(2.0, 1.0)
     v /= norm(v)
     ∇v = directional(x, v, PHS3(2))
-    ∇vy = ∇v(y)
-    @test mean_percent_error(∇vy[1], df_dx.(x) .* v[1]) < 2
-    @test mean_percent_error(∇vy[2], df_dy.(x) .* v[2]) < 2
+    exact = map(x -> SVector(df_dx(x), df_dy(x)) ⋅ v, x)
+    @test mean_percent_error(∇v(y), exact) < 2
 end
 
 @testset "Direction Vector for Each Data Center" begin
@@ -32,11 +31,8 @@ end
         return v /= norm(v)
     end
     ∇v = directional(x, v, PHS3(2))
-    ∇vy = ∇v(y)
-    df_dx_v = map((df, v) -> df * v[1], df_dx.(x), v)
-    df_dy_v = map((df, v) -> df * v[2], df_dy.(x), v)
-    @test mean_percent_error(∇vy[1], df_dx_v) < 2
-    @test mean_percent_error(∇vy[2], df_dy_v) < 2
+    exact = map((x, vv) -> SVector(df_dx(x), df_dy(x)) ⋅ vv, x, v)
+    @test mean_percent_error(∇v(y), exact) < 2
 end
 
 @testset "Different Evaluation Points" begin
@@ -46,9 +42,6 @@ end
         return v /= norm(v)
     end
     ∇v = directional(x, x2, v, PHS3(2))
-    ∇vy = ∇v(y)
-    df_dx_v = map((df, v) -> df * v[1], df_dx.(x), v)
-    df_dy_v = map((df, v) -> df * v[2], df_dy.(x), v)
-    @test mean_percent_error(∇vy[1], df_dx_v) < 2
-    @test mean_percent_error(∇vy[2], df_dy_v) < 2
+    exact = map((x, vv) -> SVector(df_dx(x), df_dy(x)) ⋅ vv, x2, v)
+    @test mean_percent_error(∇v(y), exact) < 2
 end
