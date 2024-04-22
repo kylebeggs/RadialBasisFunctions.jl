@@ -34,12 +34,12 @@ end
 Builds a `RadialBasisOperator` where the operator is the directional derivative, `Directional`.
 """
 function directional(
-    data::AbstractVector{D},
-    eval_points::AbstractVector{D},
+    data::AbstractVector,
+    eval_points::AbstractVector,
     v::AbstractVector,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-) where {D<:AbstractArray,B<:AbstractRadialBasis,T<:Int}
+) where {B<:AbstractRadialBasis,T<:Int}
     f = ntuple(length(first(data))) do dim
         return let dim = dim
             x -> ∂(x, 1, dim)
@@ -64,15 +64,15 @@ end
 
 function RadialBasisOperator(
     ℒ::Directional,
-    data::AbstractVector{D},
-    eval_points::AbstractVector{D},
+    data::AbstractVector{TD},
+    eval_points::AbstractVector{TE},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+) where {TD<:AbstractArray,TE<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
     adjl = find_neighbors(data, eval_points, k)
     Na = length(adjl)
     Nd = length(data)
-    weights = spzeros(eltype(D), Na, Nd)
+    weights = spzeros(eltype(TD), Na, Nd)
     return RadialBasisOperator(ℒ, weights, data, eval_points, adjl, basis)
 end
 

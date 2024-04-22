@@ -35,15 +35,15 @@ end
 
 function RadialBasisOperator(
     ℒ,
-    data::AbstractVector{D},
-    eval_points::AbstractVector{D},
+    data::AbstractVector{TD},
+    eval_points::AbstractVector{TE},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+) where {TD<:AbstractArray,TE<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
     adjl = find_neighbors(data, eval_points, k)
     Na = length(adjl)
     Nd = length(data)
-    weights = spzeros(eltype(D), Na, Nd)
+    weights = spzeros(eltype(TD), Na, Nd)
     return RadialBasisOperator(ℒ, weights, data, eval_points, adjl, basis)
 end
 
@@ -62,16 +62,15 @@ end
 
 function RadialBasisOperator(
     ℒ::VectorValuedOperator,
-    data::AbstractVector{D},
-    eval_points::AbstractVector{D},
+    data::AbstractVector{TD},
+    eval_points::AbstractVector{TE},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
-    TD = eltype(D)
+) where {TD<:AbstractArray,TE<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
     adjl = find_neighbors(data, eval_points, k)
     Na = length(adjl)
     Nd = length(data)
-    weights = ntuple(_ -> _allocate_weights(TD, Na, Nd, k), length(ℒ.ℒ))
+    weights = ntuple(_ -> _allocate_weights(eltype(TD), Na, Nd, k), length(ℒ.ℒ))
     return RadialBasisOperator(ℒ, weights, data, eval_points, adjl, basis)
 end
 
