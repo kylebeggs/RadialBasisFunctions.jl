@@ -35,13 +35,13 @@ end
 Builds a `RadialBasisOperator` where the operator is the partial derivative, `Partial`. The resulting operator will only evaluate at `eval_points`.
 """
 function partial(
-    data::AbstractVector{D},
-    eval_points::AbstractVector{D},
+    data::AbstractVector,
+    eval_points::AbstractVector,
     order::T,
     dim::T,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+) where {T<:Int,B<:AbstractRadialBasis}
     f = let o = order, dim = dim
         x -> ∂(x, o, dim)
     end

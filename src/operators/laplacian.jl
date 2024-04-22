@@ -16,11 +16,11 @@ function laplacian(
 end
 
 function laplacian(
-    data::AbstractVector{D},
-    eval_points::AbstractVector{D},
+    data::AbstractVector,
+    eval_points::AbstractVector,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+) where {T<:Int,B<:AbstractRadialBasis}
     ℒ = Laplacian(∇²)
     return RadialBasisOperator(ℒ, data, eval_points, basis; k=k)
 end

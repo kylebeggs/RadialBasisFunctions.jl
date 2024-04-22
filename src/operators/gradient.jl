@@ -31,11 +31,11 @@ end
 Builds a `RadialBasisOperator` where the operator is the gradient, `Gradient`. The resulting operator will only evaluate at `eval_points`.
 """
 function gradient(
-    data::AbstractVector{D},
-    eval_points::AbstractVector{D},
+    data::AbstractVector,
+    eval_points::AbstractVector,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-) where {D<:AbstractArray,B<:AbstractRadialBasis,T<:Int}
+) where {B<:AbstractRadialBasis,T<:Int}
     f = ntuple(length(first(data))) do dim
         return let dim = dim
             x -> ∂(x, 1, dim)
