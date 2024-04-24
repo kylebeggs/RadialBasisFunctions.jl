@@ -9,6 +9,7 @@ makedocs(;
     modules=[RadialBasisFunctions],
     authors="Kyle Beggs",
     sitename="RadialBasisFunctions.jl",
+    repo = GitHub("kylebeggs", "RadialBasisFunctions.jl")
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://kylebeggs.github.io/RadialBasisFunctions.jl",
@@ -21,7 +22,6 @@ makedocs(;
         "Theory" => "theory.md",
         "API" => "api.md",
     ],
-    repo = "github.com/kylebeggs/RadialBasisFunctions.jl.git"
 )
 
 withenv("GITHUB_REPOSITORY" => repo) do
