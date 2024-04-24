@@ -24,6 +24,4 @@ makedocs(;
     ],
 )
 
-withenv("GITHUB_REPOSITORY" => repo) do
-  deploydocs(; repo, versions=["stable" => "v^", "dev" => "dev"])
-end
+deploydocs(; repo="github.com/kylebeggs/RadialBasisFunctions.jl", devbranch="main", versions=["stable" => "v^", "dev" => "dev"])
