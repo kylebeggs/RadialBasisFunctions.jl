@@ -8,9 +8,9 @@ DocMeta.setdocmeta!(
 makedocs(;
     modules=[RadialBasisFunctions],
     authors="Kyle Beggs",
-    repo="https://github.com/kylebeggs/RadialBasisFunctions.jl/blob/{commit}{path}#{line}",
     sitename="RadialBasisFunctions.jl",
     format=Documenter.HTML(;
+        repolink="https://github.com/kylebeggs/RadialBasisFunctions.jl",
         prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://kylebeggs.github.io/RadialBasisFunctions.jl",
         edit_link="main",
@@ -24,4 +24,6 @@ makedocs(;
     ],
 )
 
-deploydocs(; repo="github.com/kylebeggs/RadialBasisFunctions.jl", devbranch="main")
+withenv("GITHUB_REPOSITORY" => repo) do
+  deploydocs(; repo, versions=["stable" => "v^", "dev" => "dev"])
+end
