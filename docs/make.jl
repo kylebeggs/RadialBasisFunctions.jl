@@ -21,7 +21,7 @@ makedocs(;
         "Theory" => "theory.md",
         "API" => "api.md",
     ],
-    repo = "repo = "github.com/kylebeggs/RadialBasisFunctions.jl.git"
+    repo = "github.com/kylebeggs/RadialBasisFunctions.jl.git"
 )
 
 withenv("GITHUB_REPOSITORY" => repo) do
