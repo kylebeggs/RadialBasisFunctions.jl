@@ -3,26 +3,26 @@
 using StaticArrays</code></pre><h2 id="Interpolation"><a class="docs-heading-anchor" href="#Interpolation">Interpolation</a><a id="Interpolation-1"></a><a class="docs-heading-anchor-permalink" href="#Interpolation" title="Permalink"></a></h2><p>Suppose we have a set of data <span>$\mathbf{x}$</span> where <span>$\mathbf{x}_i \in \mathbb{R}^2$</span>, and we want to interpolate a function <span>$f:\mathbb{R}^2 \rightarrow \mathbb{R}$</span></p><pre><code class="language-julia hljs">f(x) = 2*x[1]^2 + 3*x[2]
 x = [SVector{2}(rand(2)) for _ in 1:1000]
 y = f.(x)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1000-element Vector{Float64}:
- 2.0639840831942173
- 1.516465536138252
- 1.8848572844650218
- 0.7056599061964898
- 1.4879515266861258
- 2.103197377817985
- 2.2115922191362234
- 0.23459975844340197
- 3.5816241710954477
- 3.0609566063543205
+ 2.5341162224059204
+ 1.0327991916852863
+ 2.115719394830624
+ 1.117037131374479
+ 3.0239413757087217
+ 0.4822864931411992
+ 0.9330424166355831
+ 3.196094074822167
+ 2.655965460617998
+ 1.8617701444510535
  ⋮
- 2.5933115307360257
- 1.5009759321855398
- 3.582188684709304
- 2.9965244053082998
- 3.9116358808997367
- 3.0248809433663375
- 0.7300634434699375
- 0.7882856050945043
- 0.09117957291742276</code></pre><p>and now we can build the interpolator</p><pre><code class="language-julia hljs">interp = Interpolator(x, y)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Interpolator
+ 2.114177264248931
+ 0.683514612876889
+ 1.7554219680119691
+ 3.4906009663693487
+ 1.3477110844663116
+ 1.2302316104411455
+ 3.0031179016946403
+ 2.4678127412090016
+ 2.5171084107879147</code></pre><p>and now we can build the interpolator</p><pre><code class="language-julia hljs">interp = Interpolator(x, y)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Interpolator
 ├─Input type: StaticArraysCore.SVector{2, Float64}
 ├─Output type: Float64
 ├─Number of points: 1000
@@ -30,23 +30,23 @@ y = f.(x)</code></pre><pre class="documenter-example-output"><code class="nohigh
 </code></pre><p>and evaluate it at a new point</p><pre><code class="language-julia hljs">x_new = [rand(2) for _ in 1:5]
 y_new = interp(x_new)
 y_true = f.(x_new)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Float64}:
- 2.1158550414012027
- 2.6854648300111617
- 3.1410175611346327
- 3.5603550948137643
- 2.070721903392821</code></pre><p>and compare the error</p><pre><code class="language-julia hljs">abs.(y_true .- y_new)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Float64}:
- 7.389167278049058e-8
- 9.876890416649076e-10
- 3.1792294228338847e-6
- 8.951801078183053e-9
- 2.5367537448417465e-7</code></pre><p>Wow! The error is numerically zero! Well... we set ourselves up for success here. <code>Interpolator</code> (along with <code>RadialBasisOperator</code>) has an optional argument to provide the type of radial basis including the degree of polynomial augmentation. The default basis is a cubic polyharmonic spline with 2nd degree polynomial augmentation (which the constructor is <code>PHS(3, poly_deg=2)</code>) and given the underlying function we are interpolating is a 2nd order polynomial itself, we are able to represent it exactly (up to machine precision). Let&#39;s see what happens when we only use 1st order polynomial augmentation</p><pre><code class="language-julia hljs">interp = Interpolator(x, y, PHS(3, poly_deg=1))
+ 1.8721379341181632
+ 3.179688631652538
+ 2.7811956429821834
+ 3.0368486462776705
+ 1.6586183713512659</code></pre><p>and compare the error</p><pre><code class="language-julia hljs">abs.(y_true .- y_new)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Float64}:
+ 3.223099647176042e-7
+ 2.0591743322917466e-5
+ 4.4682726674238893e-7
+ 8.976223053736021e-8
+ 0.00012259659269941992</code></pre><p>Wow! The error is numerically zero! Well... we set ourselves up for success here. <code>Interpolator</code> (along with <code>RadialBasisOperator</code>) has an optional argument to provide the type of radial basis including the degree of polynomial augmentation. The default basis is a cubic polyharmonic spline with 2nd degree polynomial augmentation (which the constructor is <code>PHS(3, poly_deg=2)</code>) and given the underlying function we are interpolating is a 2nd order polynomial itself, we are able to represent it exactly (up to machine precision). Let&#39;s see what happens when we only use 1st order polynomial augmentation</p><pre><code class="language-julia hljs">interp = Interpolator(x, y, PHS(3, poly_deg=1))
 y_new = interp(x_new)
 abs.(y_true .- y_new)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">5-element Vector{Float64}:
- 1.2432002538531606e-8
- 1.0970895303330508e-9
- 2.8471522712791852e-6
- 4.911110274008479e-8
- 6.833483823243114e-8</code></pre><h2 id="Operators"><a class="docs-heading-anchor" href="#Operators">Operators</a><a id="Operators-1"></a><a class="docs-heading-anchor-permalink" href="#Operators" title="Permalink"></a></h2><p>This package also provides an API for operators. There is support for several built-in operators along with support for user-defined operators. Currently, we have implementations for</p><ul><li>partial derivative (1st and 2nd order)</li><li>gradient</li><li>laplacian</li></ul><p>but we plan to add more in the future. Please make and issue or pull request for additional operators.</p><h3 id="Partial-Derivative"><a class="docs-heading-anchor" href="#Partial-Derivative">Partial Derivative</a><a id="Partial-Derivative-1"></a><a class="docs-heading-anchor-permalink" href="#Partial-Derivative" title="Permalink"></a></h3><p>We can take the same data as above and build a partial derivative operator with a similar construction as the interpolator. For the partial we need to specify the order of differentiation we want along with the dimension for which to take the partial. We can also supply some optional arguments such as the basis and number of points in the stencil. The function inputs order is <code>partial(x, order, dim, basis; k=5)</code></p><pre><code class="language-julia hljs">df_x_rbf = partial(x, 1, 1)
+ 5.262218186374845e-5
+ 2.0670149369905744e-5
+ 5.139506598084154e-9
+ 3.2061800556704156e-6
+ 0.0001226021398299526</code></pre><h2 id="Operators"><a class="docs-heading-anchor" href="#Operators">Operators</a><a id="Operators-1"></a><a class="docs-heading-anchor-permalink" href="#Operators" title="Permalink"></a></h2><p>This package also provides an API for operators. There is support for several built-in operators along with support for user-defined operators. Currently, we have implementations for</p><ul><li>partial derivative (1st and 2nd order)</li><li>gradient</li><li>laplacian</li></ul><p>but we plan to add more in the future. Please make and issue or pull request for additional operators.</p><h3 id="Partial-Derivative"><a class="docs-heading-anchor" href="#Partial-Derivative">Partial Derivative</a><a id="Partial-Derivative-1"></a><a class="docs-heading-anchor-permalink" href="#Partial-Derivative" title="Permalink"></a></h3><p>We can take the same data as above and build a partial derivative operator with a similar construction as the interpolator. For the partial we need to specify the order of differentiation we want along with the dimension for which to take the partial. We can also supply some optional arguments such as the basis and number of points in the stencil. The function inputs order is <code>partial(x, order, dim, basis; k=5)</code></p><pre><code class="language-julia hljs">df_x_rbf = partial(x, 1, 1)
 
 # define exact
 df_x(x) = 4*x[1]
