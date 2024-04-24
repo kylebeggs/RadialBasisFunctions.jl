@@ -9,7 +9,7 @@ makedocs(;
     modules=[RadialBasisFunctions],
     authors="Kyle Beggs",
     sitename="RadialBasisFunctions.jl",
-    repo = GitHub("kylebeggs", "RadialBasisFunctions.jl")
+    repo = GitHub("kylebeggs", "RadialBasisFunctions.jl"),
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://kylebeggs.github.io/RadialBasisFunctions.jl",
