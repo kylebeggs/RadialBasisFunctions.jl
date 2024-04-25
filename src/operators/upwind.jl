@@ -28,24 +28,24 @@ function upwind(
     dx = zeros(N)
     dx[dim] = Δ
 
-    li = regrid(data, data .- Ref(dx))
-    ri = regrid(data, data .+ Ref(dx))
+    li = regrid(data, data .- Ref(dx); k=k)
+    ri = regrid(data, data .+ Ref(dx); k=k)
     update_weights!(li)
     update_weights!(ri)
     one_typed = one(eltype(first(data)))
     l = columnwise_div((sparse(one_typed * I, size(li.weights)...) .- li.weights), Δ)
     r = columnwise_div((sparse(one_typed * I, size(ri.weights)...) .- ri.weights), Δ)
-    c = partial(data, 1, dim)
+    c = partial(data, 1, dim; k=k)
 
     du = let l = l, r = r, c = c
-        (u, v, θ) -> begin
-            wl = max.(v, Ref(0)) .* (θ * (l * u) .+ (1 - θ) * c(u))
-            wr = min.(v, Ref(0)) .* (θ * (r * u) .+ (1 - θ) * c(u))
+        (ϕ, v, θ) -> begin
+            wl = max.(v, Ref(0)) .* (θ * (l * ϕ) .+ (1 - θ) * c(ϕ))
+            wr = min.(v, Ref(0)) .* (θ * (r * ϕ) .+ (1 - θ) * c(ϕ))
             wl .+ wr
         end
     end
 
-    return du, l, r
+    return du
 end
 
 function columnwise_div(A::SparseMatrixCSC, B::AbstractVector)
