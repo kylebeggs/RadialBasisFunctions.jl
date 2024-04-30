@@ -50,7 +50,7 @@ function _build_stencil!(
     basis::B,
     mon::MonomialBasis,
     k::Int,
-) where {TD<:AbstractArray,TE,B<:AbstractRadialBasis}
+) where {TD,TE,B<:AbstractRadialBasis}
     _build_collocation_matrix!(A, data, basis, mon, k)
     _build_rhs!(b, ℒrbf, ℒmon, data, eval_point, basis, k)
     return (A \ b)[1:k]
@@ -76,7 +76,7 @@ end
 
 function _build_rhs!(
     b::AbstractVector, ℒrbf, ℒmon, data::AbstractVector{TD}, eval_point::TE, basis::B, k::K
-) where {TD<:AbstractArray,TE,B<:AbstractRadialBasis,K<:Int}
+) where {TD,TE,B<:AbstractRadialBasis,K<:Int}
     # radial basis section
     @inbounds for i in eachindex(data)
         b[i] = ℒrbf(eval_point, data[i])

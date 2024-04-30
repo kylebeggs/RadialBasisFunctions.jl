@@ -39,7 +39,7 @@ function RadialBasisOperator(
     eval_points::AbstractVector{TE},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-) where {TD<:AbstractArray,TE<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+) where {TD,TE,T<:Int,B<:AbstractRadialBasis}
     adjl = find_neighbors(data, eval_points, k)
     Na = length(adjl)
     Nd = length(data)
@@ -66,7 +66,7 @@ function RadialBasisOperator(
     eval_points::AbstractVector{TE},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-) where {TD<:AbstractArray,TE<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+) where {TD,TE,T<:Int,B<:AbstractRadialBasis}
     adjl = find_neighbors(data, eval_points, k)
     Na = length(adjl)
     Nd = length(data)

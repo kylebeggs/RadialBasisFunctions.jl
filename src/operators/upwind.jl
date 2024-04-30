@@ -12,17 +12,11 @@ Builds a `RadialBasisOperator` where the operator is the partial derivative, `Pa
 function upwind(
     data::AbstractVector{D},
     dim,
+    Δ=nothing,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
-    tree = KDTree(data)
-    _, dists = knn(tree, data, k, true)
-    Δ = minimum(dists) do d
-        z = minimum(@view(d[2:end])) do i
-            abs(i - first(d))
-        end
-        return z
-    end
+    Δ === nothing && (Δ = _find_smallest_dist(data, k))
 
     N = length(first(data))
     dx = zeros(N)
@@ -33,14 +27,14 @@ function upwind(
     update_weights!(li)
     update_weights!(ri)
     one_typed = one(eltype(first(data)))
-    l = columnwise_div((sparse(one_typed * I, size(li.weights)...) .- li.weights), Δ)
-    r = columnwise_div((sparse(one_typed * I, size(ri.weights)...) .- ri.weights), Δ)
-    c = partial(data, 1, dim; k=k)
+    backward = columnwise_div((sparse(one_typed * I, size(li.weights)...) .- li.weights), Δ)
+    forward = columnwise_div((-sparse(one_typed * I, size(ri.weights)...) .+ ri.weights), Δ)
+    center = partial(data, 1, dim; k=k)
 
-    du = let l = l, r = r, c = c
+    du = let backward = backward, forward = forward, center = center
         (ϕ, v, θ) -> begin
-            wl = max.(v, Ref(0)) .* (θ * (l * ϕ) .+ (1 - θ) * c(ϕ))
-            wr = min.(v, Ref(0)) .* (θ * (r * ϕ) .+ (1 - θ) * c(ϕ))
+            wl = max.(v, Ref(0)) .* (θ * (backward * ϕ) .+ (1 - θ) * center(ϕ))
+            wr = min.(v, Ref(0)) .* (θ * (forward * ϕ) .+ (1 - θ) * center(ϕ))
             wl .+ wr
         end
     end
@@ -56,6 +50,18 @@ function columnwise_div(A::SparseMatrixCSC, B::AbstractVector)
     return sparse(I, J, V)
 end
 columnwise_div(A::SparseMatrixCSC, B::Number) = A ./ B
+
+function _find_smallest_dist(data, k)
+    tree = KDTree(data)
+    _, dists = knn(tree, data, k, true)
+    Δ = minimum(dists) do d
+        z = minimum(@view(d[2:end])) do i
+            abs(i - first(d))
+        end
+        return z
+    end
+    return Δ
+end
 
 separate(f, x) = (t = findall(f, x); (@view(x[t]), @view(x[setdiff(eachindex(x), t)])))
 
