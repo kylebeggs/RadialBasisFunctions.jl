@@ -40,6 +40,10 @@ end
     include("operators/regrid.jl")
 end
 
+@safetestset "Virtual" begin
+    include("operators/virtual.jl")
+end
+
 @safetestset "Stencil" begin
     include("linalg/stencil.jl")
 end

@@ -50,8 +50,8 @@ abs.(y_true .- y_new)
 This package also provides an API for operators. There is support for several built-in operators along with support for user-defined operators. Currently, we have implementations for
 
 - partial derivative (1st and 2nd order)
-- gradient
 - laplacian
+- gradient
 
 but we plan to add more in the future. Please make and issue or pull request for additional operators.
 

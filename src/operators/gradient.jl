@@ -14,7 +14,10 @@ end
 Builds a `RadialBasisOperator` where the operator is the gradient, `Gradient`.
 """
 function gradient(
-    data::AbstractVector{D}, basis::B=PHS(3; poly_deg=2); k::T=autoselect_k(data, basis)
+    data::AbstractVector{D},
+    basis::B=PHS(3; poly_deg=2);
+    k::T=autoselect_k(data, basis),
+    adjl=find_neighbors(data, k),
 ) where {D<:AbstractArray,B<:AbstractRadialBasis,T<:Int}
     f = ntuple(length(first(data))) do dim
         return let dim = dim
@@ -22,7 +25,7 @@ function gradient(
         end
     end
     ℒ = Gradient(f)
-    return RadialBasisOperator(ℒ, data, basis; k=k)
+    return RadialBasisOperator(ℒ, data, basis; k=k, adjl=adjl)
 end
 
 """
@@ -31,18 +34,19 @@ end
 Builds a `RadialBasisOperator` where the operator is the gradient, `Gradient`. The resulting operator will only evaluate at `eval_points`.
 """
 function gradient(
-    data::AbstractVector{D},
-    eval_points::AbstractVector{D},
+    data::AbstractVector,
+    eval_points::AbstractVector,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
-) where {D<:AbstractArray,B<:AbstractRadialBasis,T<:Int}
+    adjl=find_neighbors(data, eval_points, k),
+) where {B<:AbstractRadialBasis,T<:Int}
     f = ntuple(length(first(data))) do dim
         return let dim = dim
             x -> ∂(x, 1, dim)
         end
     end
     ℒ = Gradient(f)
-    return RadialBasisOperator(ℒ, data, eval_points, basis; k=k)
+    return RadialBasisOperator(ℒ, data, eval_points, basis; k=k, adjl=adjl)
 end
 
 Base.size(op::RadialBasisOperator{<:Gradient}) = size(first(op.weights))

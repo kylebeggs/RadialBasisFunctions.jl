@@ -36,7 +36,7 @@ for op in (:+, :-, :*, :/)
         k2 = length(first((op2.adjl)))
         k = k1 > k2 ? k1 : k2
         ℒ = Base.$op(op1.ℒ, op2.ℒ)
-        return RadialBasisOperator(ℒ, op1.data, op1.basis; k=k)
+        return RadialBasisOperator(ℒ, op1.data, op1.basis; k=k, adjl=op1.adjl)
     end
 end
 

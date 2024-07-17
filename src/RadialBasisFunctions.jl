@@ -23,7 +23,7 @@ export find_neighbors, reorder_points!
 include("linalg/stencil.jl")
 
 include("operators/operators.jl")
-export RadialBasisOperator
+export RadialBasisOperator, update_weights!
 
 include("operators/partial.jl")
 export Partial, partial
@@ -36,6 +36,9 @@ export Gradient, gradient
 
 include("operators/directional.jl")
 export Directional, directional
+
+include("operators/virtual.jl")
+export ∂virtual
 
 include("operators/monomial.jl")
 

@@ -1,18 +1,27 @@
 function _build_weights(ℒ, op; nchunks=Threads.nthreads())
     data = op.data
-    eval_points = op.eval_points
-    adjl = op.adjl
     basis = op.basis
-    TD = eltype(first(data))
     dim = length(first(data)) # dimension of data
-    nmon = binomial(dim + basis.poly_deg, basis.poly_deg)
-    k = length(first(adjl))  # number of data in influence/support domain
-    sizes = (k, nmon)
 
     # build monomial basis and operator
     mon = MonomialBasis(dim, basis.poly_deg)
     ℒmon = ℒ(mon)
     ℒrbf = ℒ(basis)
+
+    return _build_weights(op, ℒrbf, ℒmon, mon; nchunks=nchunks)
+end
+
+function _build_weights(op, ℒrbf, ℒmon, mon; nchunks=Threads.nthreads())
+    data = op.data
+    eval_points = op.eval_points
+    adjl = op.adjl
+    basis = op.basis
+
+    TD = eltype(first(data))
+    dim = length(first(data)) # dimension of data
+    nmon = binomial(dim + basis.poly_deg, basis.poly_deg)
+    k = length(first(adjl))  # number of data in influence/support domain
+    sizes = (k, nmon)
 
     # allocate arrays to build sparse matrix
     Na = length(adjl)
@@ -45,12 +54,12 @@ function _build_stencil!(
     b::Vector,
     ℒrbf,
     ℒmon,
-    data::AbstractVector{D},
-    eval_point::D,
+    data::AbstractVector{TD},
+    eval_point::TE,
     basis::B,
     mon::MonomialBasis,
     k::Int,
-) where {D<:AbstractArray,B<:AbstractRadialBasis}
+) where {TD,TE,B<:AbstractRadialBasis}
     _build_collocation_matrix!(A, data, basis, mon, k)
     _build_rhs!(b, ℒrbf, ℒmon, data, eval_point, basis, k)
     return (A \ b)[1:k]
@@ -75,8 +84,8 @@ function _build_collocation_matrix!(
 end
 
 function _build_rhs!(
-    b::AbstractVector, ℒrbf, ℒmon, data::AbstractVector{D}, eval_point::D, basis::B, k::K
-) where {D<:AbstractArray,B<:AbstractRadialBasis,K<:Int}
+    b::AbstractVector, ℒrbf, ℒmon, data::AbstractVector{TD}, eval_point::TE, basis::B, k::K
+) where {TD,TE,B<:AbstractRadialBasis,K<:Int}
     # radial basis section
     @inbounds for i in eachindex(data)
         b[i] = ℒrbf(eval_point, data[i])

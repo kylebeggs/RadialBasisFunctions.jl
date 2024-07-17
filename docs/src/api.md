@@ -1,4 +1,4 @@
-# Exported Functions
+## Exported Functions
 
 ```@autodocs
 Modules = [RadialBasisFunctions]
@@ -6,7 +6,7 @@ Private = false
 Order   = [:function, :type]
 ```
 
-# Private
+## Private
 
 ```@autodocs
 Modules = [RadialBasisFunctions]
