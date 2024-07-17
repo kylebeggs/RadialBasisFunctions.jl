@@ -18,6 +18,7 @@ function directional(
     v::AbstractVector,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
+    adjl=find_neighbors(data, k),
 ) where {D<:AbstractArray,B<:AbstractRadialBasis,T<:Int}
     f = ntuple(length(first(data))) do dim
         return let dim = dim
@@ -25,7 +26,7 @@ function directional(
         end
     end
     ℒ = Directional(f, v)
-    return RadialBasisOperator(ℒ, data, basis; k=k)
+    return RadialBasisOperator(ℒ, data, basis; k=k, adjl=adjl)
 end
 
 """
@@ -39,6 +40,7 @@ function directional(
     v::AbstractVector,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
+    adjl=find_neighbors(data, eval_points, k),
 ) where {B<:AbstractRadialBasis,T<:Int}
     f = ntuple(length(first(data))) do dim
         return let dim = dim
@@ -46,7 +48,7 @@ function directional(
         end
     end
     ℒ = Directional(f, v)
-    return RadialBasisOperator(ℒ, data, eval_points, basis; k=k)
+    return RadialBasisOperator(ℒ, data, eval_points, basis; k=k, adjl=adjl)
 end
 
 function RadialBasisOperator(
@@ -54,8 +56,8 @@ function RadialBasisOperator(
     data::AbstractVector{D},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
+    adjl=find_neighbors(data, k),
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
-    adjl = find_neighbors(data, k)
     Na = length(adjl)
     Nd = length(data)
     weights = spzeros(eltype(D), Na, Nd)
@@ -68,8 +70,8 @@ function RadialBasisOperator(
     eval_points::AbstractVector{TE},
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
+    adjl=find_neighbors(data, eval_points, k),
 ) where {TD,TE,T<:Int,B<:AbstractRadialBasis}
-    adjl = find_neighbors(data, eval_points, k)
     Na = length(adjl)
     Nd = length(data)
     weights = spzeros(eltype(TD), Na, Nd)
