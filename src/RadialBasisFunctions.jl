@@ -37,8 +37,8 @@ export Gradient, gradient
 include("operators/directional.jl")
 export Directional, directional
 
-include("operators/upwind.jl")
-export Upwind, upwind
+include("operators/virtual.jl")
+export ∂virtual
 
 include("operators/monomial.jl")
 

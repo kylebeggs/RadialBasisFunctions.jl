@@ -9,10 +9,13 @@ end
 
 # convienience constructors
 function laplacian(
-    data::AbstractVector{D}, basis::B=PHS(3; poly_deg=2); k::T=autoselect_k(data, basis)
+    data::AbstractVector{D},
+    basis::B=PHS(3; poly_deg=2);
+    k::T=autoselect_k(data, basis),
+    adjl=find_neighbors(data, k),
 ) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
     ℒ = Laplacian(∇²)
-    return RadialBasisOperator(ℒ, data, basis; k=k)
+    return RadialBasisOperator(ℒ, data, basis; k=k, adjl=adjl)
 end
 
 function laplacian(
@@ -20,9 +23,10 @@ function laplacian(
     eval_points::AbstractVector,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
+    adjl=find_neighbors(data, eval_points, k),
 ) where {T<:Int,B<:AbstractRadialBasis}
     ℒ = Laplacian(∇²)
-    return RadialBasisOperator(ℒ, data, eval_points, basis; k=k)
+    return RadialBasisOperator(ℒ, data, eval_points, basis; k=k, adjl=adjl)
 end
 
 # pretty printing

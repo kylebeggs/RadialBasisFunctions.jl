@@ -1,18 +1,27 @@
 function _build_weights(ℒ, op; nchunks=Threads.nthreads())
     data = op.data
-    eval_points = op.eval_points
-    adjl = op.adjl
     basis = op.basis
-    TD = eltype(first(data))
     dim = length(first(data)) # dimension of data
-    nmon = binomial(dim + basis.poly_deg, basis.poly_deg)
-    k = length(first(adjl))  # number of data in influence/support domain
-    sizes = (k, nmon)
 
     # build monomial basis and operator
     mon = MonomialBasis(dim, basis.poly_deg)
     ℒmon = ℒ(mon)
     ℒrbf = ℒ(basis)
+
+    return _build_weights(op, ℒrbf, ℒmon, mon; nchunks=nchunks)
+end
+
+function _build_weights(op, ℒrbf, ℒmon, mon; nchunks=Threads.nthreads())
+    data = op.data
+    eval_points = op.eval_points
+    adjl = op.adjl
+    basis = op.basis
+
+    TD = eltype(first(data))
+    dim = length(first(data)) # dimension of data
+    nmon = binomial(dim + basis.poly_deg, basis.poly_deg)
+    k = length(first(adjl))  # number of data in influence/support domain
+    sizes = (k, nmon)
 
     # allocate arrays to build sparse matrix
     Na = length(adjl)
