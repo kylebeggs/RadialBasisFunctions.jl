@@ -1,7 +1,12 @@
 """
-    abstract type AbstractRadialBasis end
+    abstract type AbstractBasis end
 """
-abstract type AbstractRadialBasis end
+abstract type AbstractBasis end
+
+"""
+    abstract type AbstractRadialBasis <: AbstractBasis end
+"""
+abstract type AbstractRadialBasis <: AbstractBasis end
 
 struct ℒRadialBasisFunction{F<:Function}
     f::F
@@ -11,18 +16,12 @@ end
 struct ℒMonomial{F<:Function}
     f::F
 end
-(ℒmon::ℒMonomial)(m, x) = ℒmon.f(m, x)
+(ℒmon::ℒMonomial)(x) = ℒmon.f(x)
 
 include("polyharmonic_spline.jl")
 include("inverse_multiquadric.jl")
 include("gaussian.jl")
 include("monomial.jl")
-
-function ∂(basis::B, order::T, dim::T) where {T<:Int,B<:AbstractRadialBasis}
-    return ∂(basis, Val(order), dim)
-end
-∂(basis::B, dim::T) where {T<:Int,B} = ∂(basis, Val(1), dim)
-∂²(basis::B, dim::T) where {T<:Int,B} = ∂(basis, Val(2), dim)
 
 # pretty printing
 unicode_order(::Val{1}) = ""

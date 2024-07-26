@@ -51,5 +51,19 @@ function partial(
     return RadialBasisOperator(ℒ, data, eval_points, basis; k=k, adjl=adjl)
 end
 
+function ∂(basis::AbstractBasis, order::T, dim::T) where {T<:Int}
+    if order == 1
+        return ∂(basis, dim)
+    elseif order == 2
+        return ∂²(basis, dim)
+    else
+        throw(
+            ArgumentError(
+                "Only first and second order derivatives are supported right now. You may use the custom operator.",
+            ),
+        )
+    end
+end
+
 # pretty printing
 print_op(op::Partial) = "∂ⁿf/∂xᵢ (n = $(op.order), i = $(op.dim))"

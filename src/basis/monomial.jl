@@ -1,92 +1,49 @@
 """
-    struct MonomialBasis{Dim,Deg}
+    struct MonomialBasis{Dim,Deg} <: AbstractBasis
 
 `Dim` dimensional monomial basis of order `Deg`.
 """
-struct MonomialBasis{Dim,Deg,Ops}
-    ops::Ops
-end
-MonomialBasis{Dim,Deg}(ops::Ops) where {Dim,Deg,Ops} = MonomialBasis{Dim,Deg,Ops}(ops)
-function MonomialBasis(dim::T, deg::T) where {T<:Int}
-    ops = _get_ops(Val(dim), Val(deg))
-    return MonomialBasis{dim,deg,typeof(ops)}(ops)
-end
-(m::MonomialBasis)(x) = MonomialBasisIterator(m, x)
-
-struct MonomialBasisIterator{T,Dim,Deg,X}
-    basis::MonomialBasis{Dim,Deg}
-    x::X
-    function MonomialBasisIterator(mb::MonomialBasis{Dim,Deg}, x::X) where {Dim,Deg,X}
-        !_check_input(x) && throw(ArgumentError("Input must be a tuple of the same type"))
-        return new{eltype(x),Dim,Deg,X}(mb, x)
+struct MonomialBasis{Dim,Deg} <: AbstractBasis
+    function MonomialBasis(dim::T, deg::T) where {T<:Int}
+        if deg < 0
+            throw(ArgumentError("Monomial basis must have non-negative degree"))
+        end
+        return new{dim,deg}()
     end
 end
 
-_check_input(::AbstractVector) = true
-_check_input(x::Tuple) = all(a -> typeof(x[1]) == typeof(a), x)
-
-mutable struct MonomialState{TV,TI}
-    val::TV
-    index::TI
+(m::MonomialBasis{1,0})(x) = one(_get_underlying_type(x))
+(m::MonomialBasis{1,0})(x::AbstractVector) = SVector{1}(one(_get_underlying_type(x)))
+function (m::MonomialBasis{1,N})(x) where {N}
+    return SVector{N + 1}(one(x), ntuple(n -> x^n, N)...)
+end
+function (m::MonomialBasis{1,N})(x::AbstractVector) where {N}
+    return SVector{N + 1}(one(eltype(x)), ntuple(n -> x[1]^n, N)...)
 end
 
-function Base.iterate(m::MonomialBasisIterator{T}, state=MonomialState(one(T), 1)) where {T}
-    if state.index > length(m.basis.ops)
-        return nothing
-    else
-        val = m.basis.ops[state.index](state.val, m.x)
-        state.val = iszero(val) ? state.val : val
-        state.index += 1
-        return (val, state)
-    end
+(m::MonomialBasis{2,0})(x) = one(eltype(x))
+(m::MonomialBasis{2,1})(x) = SVector{3}(one(eltype(x)), x[1], x[2])
+function (m::MonomialBasis{2,2})(x)
+    return SVector{6}(one(eltype(x)), x[1], x[2], x[1] * x[2], x[1] * x[1], x[2] * x[2])
 end
-Base.length(m::MonomialBasisIterator) = length(m.basis.ops)
-Base.eltype(::Type{<:MonomialBasisIterator{T}}) where {T} = T
+
+(m::MonomialBasis{3,0})(x) = one(eltype(x))
+(m::MonomialBasis{3,1})(x) = SVector{4}(one(eltype(x)), x[1], x[2], x[3])
+function (m::MonomialBasis{3,2})(x)
+    return SVector{10}(
+        one(eltype(x)),
+        x[1],
+        x[2],
+        x[3],
+        x[1] * x[2],
+        x[1] * x[3],
+        x[2] * x[3],
+        x[1] * x[1] * x[1],
+        x[2] * x[2] * x[2],
+        x[3] * x[3] * x[3],
+    )
+end
 
 function Base.show(io::IO, ::MonomialBasis{Dim,Deg}) where {Dim,Deg}
-    return print(io, "MonomialBasis, deg=$(Deg) in $(Dim) dimensions")
-end
-
-_get_ops(::Val{1}, ::Val{0}) = ((s, _) -> s,)
-function _get_ops(::Val{1}, ::Val{N}) where {N}
-    return ((s, _) -> s, ntuple(i -> ((s, x) -> s * x[1]), N)...)
-end
-
-_get_ops(::Val{2}, ::Val{0}) = ((s, _) -> s,)
-_get_ops(::Val{2}, ::Val{1}) = ((s, _) -> s, (s, x) -> s * x[1], (s, x) -> s * x[2] / x[1])
-function _get_ops(::Val{2}, ::Val{2})
-    return (
-        (s, _) -> s,
-        (s, x) -> s * x[1],
-        (s, x) -> s * x[1],
-        (s, x) -> s / (x[1] * x[1]) * x[2],
-        (s, x) -> s * x[1],
-        (s, x) -> s / x[1] * x[2],
-    )
-end
-
-function _get_ops(::Val{3}, ::Val{0})
-    return ((s, _) -> s,)
-end
-function _get_ops(::Val{3}, ::Val{1})
-    return (
-        (s, _) -> s,
-        (s, x) -> s * x[1],
-        (s, x) -> s * x[2] / x[1],
-        (s, x) -> s * x[3] / x[2],
-    )
-end
-function _get_ops(::Val{3}, ::Val{2})
-    return (
-        (s, _) -> s,
-        (s, x) -> s * x[1],
-        (s, x) -> s * x[2] / x[1],
-        (s, x) -> s * x[3] / x[2],
-        (s, x) -> s * x[1] * x[1] / x[3],
-        (s, x) -> s * x[2] / x[1],
-        (s, x) -> s * x[2] / x[1],
-        (s, x) -> s * x[1] * x[3] / (x[2] * x[2]),
-        (s, x) -> s * x[3] / x[1],
-        (s, x) -> s * x[2] / x[3],
-    )
+    return print(io, "MonomialBasis of degree $(Deg) in $(Dim) dimensions")
 end

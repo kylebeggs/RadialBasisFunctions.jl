@@ -20,7 +20,7 @@ export MonomialBasis
 include("utils.jl")
 export find_neighbors, reorder_points!
 
-include("linalg/stencil.jl")
+include("solve.jl")
 
 include("operators/operators.jl")
 export RadialBasisOperator, update_weights!
@@ -54,7 +54,6 @@ const Δ = ∇² # some people like this notation for the Laplacian
 const DIV0_OFFSET = 1e-8
 
 using PrecompileTools
-#=
 @setup_workload begin
     f(x) = 1 + sin(4 * x[1]) + cos(3 * x[1]) + sin(2 * x[2])
     x = map(x -> SVector{2}(rand(2)), 1:100)
@@ -64,7 +63,7 @@ using PrecompileTools
         basis_funcs = [
             IMQ(1),
             Gaussian(1),
-            PHS(1; poly_deg=-1),
+            PHS(1; poly_deg=0),
             PHS(3; poly_deg=0),
             PHS(5; poly_deg=1),
             PHS(7; poly_deg=2),
@@ -89,6 +88,5 @@ using PrecompileTools
         end
     end
 end
-=#
 
 end # module

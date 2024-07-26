@@ -15,7 +15,7 @@ end
 
 (rbf::IMQ)(x, xᵢ) = 1 / sqrt((euclidean(x, xᵢ) * rbf.ε)^2 + 1)
 
-function ∂(rbf::IMQ, ::Val{1}, dim::Int=1)
+function ∂(rbf::IMQ, dim::Int=1)
     function ∂ℒ(x, xᵢ)
         ε2 = rbf.ε .^ 2
         return (xᵢ[dim] - x[dim]) .* (ε2 / sqrt((ε2 * sqeuclidean(x, xᵢ) + 1)^3))
@@ -29,7 +29,7 @@ function ∇(rbf::IMQ)
     end
 end
 
-function ∂(rbf::IMQ, ::Val{2}, dim::Int=1)
+function ∂²(rbf::IMQ, dim::Int=1)
     function ∂²ℒ(x, xᵢ)
         ε2 = rbf.ε .^ 2
         ε4 = ε2^2
