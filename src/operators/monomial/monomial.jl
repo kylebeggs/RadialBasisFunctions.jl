@@ -2,18 +2,6 @@ include("partial.jl")
 ∂(mb::MonomialBasis, differentiation_dim::Int) = ∂(mb, Val(differentiation_dim))
 ∂²(mb::MonomialBasis, differentiation_dim::Int) = ∂²(mb, Val(differentiation_dim))
 
-#function ∇(m::MonomialBasis{Dim}) where {Dim}
-#    basis(x) = ntuple(dim -> ∂(m, dim)(x), Dim)
-#    return ℒMonomialBasis(m,basis)
-#end
-
-#function ∇²(m::MonomialBasis{Dim}) where {Dim}
-#    basis(x) = sum(dim -> ∂²(m, dim)(x), 1:Dim)
-#    return ℒMonomialBasis(m,basis)
-#end
-
-#########################################################################
-
 ∂(basis::MonomialBasis, ::Val{N}) where {N} = _∂(basis, 1, Val(N))
 ∂²(basis::MonomialBasis, ::Val{N}) where {N} = _∂(basis, 2, Val(N))
 

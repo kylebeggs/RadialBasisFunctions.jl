@@ -1,10 +1,3 @@
-#function ∂(::MonomialBasis{Dim,Deg}, ::Val{N}) where {Dim,Deg,N}
-#    exponents = (x[1:Dim] for x in multiexponents(Dim + 1, Deg))
-#    x = FD.make_variables(:x, Dim)
-#    f = map(exponent -> prod(x .^ exponent), exponents)
-#    return FD.make_function(FD.derivative(f, x[N]), x)
-#end
-
 for N in (:1, :2, :3)
     for Dim in (:1, :2, :3)
         @eval begin
@@ -175,13 +168,6 @@ function ∂(::MonomialBasis{3,2}, ::Val{3})
 end
 
 ## ∂²
-
-#function ∂²(::MonomialBasis{Dim,Deg}, ::Val{N}) where {Dim,Deg,N}
-#    exponents = (x[1:Dim] for x in multiexponents(Dim + 1, Deg))
-#    x = FD.make_variables(:x, Dim)
-#    f = map(exponent -> prod(x .^ exponent), exponents)
-#    return FD.make_function(FD.derivative(FD.derivative(f, x[N]), x[N]), x)
-#end
 
 ∂²(m::MonomialBasis{Dim,0}, n::Val{N}) where {Dim,N} = ∂(m, n)
 ∂²(m::MonomialBasis{1,0}, n::Val{N}) where {N} = ∂(m, n)

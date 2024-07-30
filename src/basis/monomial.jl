@@ -110,12 +110,6 @@ function build_monomial_basis(ids::Vector{Vector{Vector{T}}}) where {T<:Int}
     return basis!
 end
 
-#function _get_monomial_basis(::Val{Dim}, ::Val{Deg}) where {Dim,Deg}
-#    exponents = (x[1:Dim] for x in multiexponents(Dim + 1, Deg))
-#    x = make_variables(:x, Dim)
-#    return FD.make_function(map(exponent -> prod(x .^ exponent), exponents), x)
-#end
-
 function Base.show(io::IO, ::MonomialBasis{Dim,Deg}) where {Dim,Deg}
     return print(io, "MonomialBasis of degree $(Deg) in $(Dim) dimensions")
 end
