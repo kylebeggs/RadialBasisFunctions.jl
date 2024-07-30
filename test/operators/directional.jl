@@ -13,8 +13,11 @@ df_dy(x) = 2 * cos(2 * x[2])
 d2f_dxx(x) = -16 * sin(4 * x[1]) - 9 * cos(3 * x[1])
 d2f_dyy(x) = -4 * sin(2 * x[2])
 
-N = 10_000
-x = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), 1:N)
+N = 100
+Δ = 1 / (N - 1)
+points = 0:Δ:1
+structured_points = ((x, y) for x in points for y in points)
+x = map(x -> SVector{2}(x .+ (Δ / 2 .* rand(2))), structured_points)
 y = f.(x)
 
 @testset "Single Direction" begin
@@ -22,7 +25,7 @@ y = f.(x)
     v /= norm(v)
     ∇v = directional(x, v, PHS3(2))
     exact = map(x -> SVector(df_dx(x), df_dy(x)) ⋅ v, x)
-    @test mean_percent_error(∇v(y), exact) < 5
+    @test mean_percent_error(∇v(y), exact) < 1
 end
 
 @testset "Direction Vector for Each Data Center" begin
@@ -32,7 +35,7 @@ end
     end
     ∇v = directional(x, v, PHS3(2))
     exact = map((x, vv) -> SVector(df_dx(x), df_dy(x)) ⋅ vv, x, v)
-    @test mean_percent_error(∇v(y), exact) < 5
+    @test mean_percent_error(∇v(y), exact) < 1
 end
 
 @testset "Different Evaluation Points" begin
@@ -43,5 +46,5 @@ end
     end
     ∇v = directional(x, x2, v, PHS3(2))
     exact = map((x, vv) -> SVector(df_dx(x), df_dy(x)) ⋅ vv, x2, v)
-    @test mean_percent_error(∇v(y), exact) < 5
+    @test mean_percent_error(∇v(y), exact) < 1
 end

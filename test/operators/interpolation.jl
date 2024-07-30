@@ -15,8 +15,11 @@ function franke(x)
     return a + b + c - d
 end
 
-N = 1000
-x = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), 1:N)
+N = 100
+Δ = 1 / (N - 1)
+points = 0:Δ:1
+structured_points = ((x, y) for x in points for y in points)
+x = map(x -> SVector{2}(x .+ (Δ / 2 .* rand(2))), structured_points)
 y = franke.(x)
 
 interp = Interpolator(x, y, PHS(3; poly_deg=2))
