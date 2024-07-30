@@ -3,46 +3,118 @@
 
 `Dim` dimensional monomial basis of order `Deg`.
 """
-struct MonomialBasis{Dim,Deg} <: AbstractBasis
+struct MonomialBasis{Dim,Deg,F<:Function} <: AbstractBasis
+    f::F
     function MonomialBasis(dim::T, deg::T) where {T<:Int}
         if deg < 0
             throw(ArgumentError("Monomial basis must have non-negative degree"))
         end
-        return new{dim,deg}()
+        f = _get_monomial_basis(Val(dim), Val(deg))
+        return new{dim,deg,typeof(f)}(f)
     end
 end
 
-(m::MonomialBasis{1,0})(x) = one(_get_underlying_type(x))
-(m::MonomialBasis{1,0})(x::AbstractVector) = SVector{1}(one(_get_underlying_type(x)))
-function (m::MonomialBasis{1,N})(x) where {N}
-    return SVector{N + 1}(one(x), ntuple(n -> x^n, N)...)
+function (m::MonomialBasis{Dim,Deg})(x) where {Dim,Deg}
+    b = ones(_get_underlying_type(x), binomial(Dim + Deg, Dim))
+    m.f(b, x)
+    return b
 end
-function (m::MonomialBasis{1,N})(x::AbstractVector) where {N}
-    return SVector{N + 1}(one(eltype(x)), ntuple(n -> x[1]^n, N)...)
+(m::MonomialBasis)(b, x) = m.f(b, x)
+
+for Dim in (:1, :2, :3)
+    @eval begin
+        function _get_monomial_basis(::Val{$Dim}, ::Val{0})
+            return function basis!(b, x)
+                b[1] = one(_get_underlying_type(x))
+                return nothing
+            end
+        end
+    end
 end
 
-(m::MonomialBasis{2,0})(x) = one(eltype(x))
-(m::MonomialBasis{2,1})(x) = SVector{3}(one(eltype(x)), x[1], x[2])
-function (m::MonomialBasis{2,2})(x)
-    return SVector{6}(one(eltype(x)), x[1], x[2], x[1] * x[2], x[1] * x[1], x[2] * x[2])
+function _get_monomial_basis(::Val{1}, ::Val{N}) where {N}
+    return function basis!(b, x)
+        b[1] = one(_get_underlying_type(x))
+        if N > 0
+            for n in 1:N
+                b[n + 1] = only(x)^n
+            end
+        end
+        return nothing
+    end
 end
 
-(m::MonomialBasis{3,0})(x) = one(eltype(x))
-(m::MonomialBasis{3,1})(x) = SVector{4}(one(eltype(x)), x[1], x[2], x[3])
-function (m::MonomialBasis{3,2})(x)
-    return SVector{10}(
-        one(eltype(x)),
-        x[1],
-        x[2],
-        x[3],
-        x[1] * x[2],
-        x[1] * x[3],
-        x[2] * x[3],
-        x[1] * x[1] * x[1],
-        x[2] * x[2] * x[2],
-        x[3] * x[3] * x[3],
-    )
+function _get_monomial_basis(::Val{2}, ::Val{1})
+    return function basis!(b, x)
+        b[1] = one(eltype(x))
+        b[2] = x[1]
+        b[3] = x[2]
+        return nothing
+    end
 end
+
+function _get_monomial_basis(::Val{2}, ::Val{2})
+    return function basis!(b, x)
+        b[1] = one(eltype(x))
+        b[2] = x[1]
+        b[3] = x[2]
+        b[4] = x[1] * x[2]
+        b[5] = x[1] * x[1]
+        b[6] = x[2] * x[2]
+        return nothing
+    end
+end
+
+function _get_monomial_basis(::Val{3}, ::Val{1})
+    return function basis!(b, x)
+        b[1] = one(eltype(x))
+        b[2] = x[1]
+        b[3] = x[2]
+        b[4] = x[3]
+        return nothing
+    end
+end
+
+function _get_monomial_basis(::Val{3}, ::Val{2})
+    return function basis!(b, x)
+        b[1] = one(eltype(x))
+        b[2] = x[1]
+        b[3] = x[2]
+        b[4] = x[3]
+        b[5] = x[1] * x[2]
+        b[6] = x[1] * x[3]
+        b[7] = x[2] * x[3]
+        b[8] = x[1] * x[1]
+        b[9] = x[2] * x[2]
+        b[10] = x[3] * x[3]
+        return nothing
+    end
+end
+
+function _get_monomial_basis(::Val{Dim}, ::Val{Deg}) where {Dim,Deg}
+    e = multiexponents(Dim + 1, Deg)
+    e = map(i -> getindex.(e, i), 1:Dim)
+    ids = map(j -> map(i -> findall(x -> x >= i, e[j]), 1:Deg), 1:Dim)
+    return build_monomial_basis(ids)
+end
+
+function build_monomial_basis(ids::Vector{Vector{Vector{T}}}) where {T<:Int}
+    function basis!(b::AbstractVector{B}, x::AbstractVector) where {B}
+        b .= one(B)
+        # TODO flatten loop - why does it allocate here
+        @views @inbounds for i in eachindex(ids), k in eachindex(ids[i])
+            b[ids[i][k]] *= x[i]
+        end
+        return nothing
+    end
+    return basis!
+end
+
+#function _get_monomial_basis(::Val{Dim}, ::Val{Deg}) where {Dim,Deg}
+#    exponents = (x[1:Dim] for x in multiexponents(Dim + 1, Deg))
+#    x = make_variables(:x, Dim)
+#    return FD.make_function(map(exponent -> prod(x .^ exponent), exponents), x)
+#end
 
 function Base.show(io::IO, ::MonomialBasis{Dim,Deg}) where {Dim,Deg}
     return print(io, "MonomialBasis of degree $(Deg) in $(Dim) dimensions")

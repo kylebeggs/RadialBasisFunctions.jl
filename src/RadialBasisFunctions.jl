@@ -3,6 +3,8 @@ module RadialBasisFunctions
 using ChunkSplitters
 using Combinatorics
 using Distances
+using FastDifferentiation
+import FastDifferentiation as FD
 using LinearAlgebra
 using NearestNeighbors
 using SparseArrays

@@ -11,7 +11,7 @@ d2f_dxx(x) = -16 * sin(4 * x[1]) - 9 * cos(3 * x[1])
 d2f_dyy(x) = -4 * sin(2 * x[2])
 ∇²f(x) = d2f_dxx(x) + d2f_dyy(x)
 
-N = 1000
+N = 10_000
 x = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), 1:N)
 y = f.(x)
 
