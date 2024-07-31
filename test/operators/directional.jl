@@ -36,7 +36,7 @@ end
 end
 
 @testset "Different Evaluation Points" begin
-    x2 = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), 1:N)
+    x2 = SVector{2}.(HaltonPoint(2)[1:N])
     v = map(1:length(x2)) do i
         v = SVector{2}(rand(2))
         return v /= norm(v)

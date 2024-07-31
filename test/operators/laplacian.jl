@@ -27,7 +27,7 @@ y = f.(x)
 end
 
 @testset "Different Evaluation Points" begin
-    x2 = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), (N + 1):(N + 1000))
+    x2 = SVector{2}.(HaltonPoint(2)[1:N])
     ∇² = laplacian(x, x2, PHS(3; poly_deg=4))
     @test mean_percent_error(∇²(y), ∇²f.(x2)) < 5
 end
