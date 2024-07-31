@@ -1,28 +1,38 @@
 """
-    abstract type AbstractRadialBasis end
+    abstract type AbstractBasis end
 """
-abstract type AbstractRadialBasis end
+abstract type AbstractBasis end
+
+"""
+    abstract type AbstractRadialBasis <: AbstractBasis end
+"""
+abstract type AbstractRadialBasis <: AbstractBasis end
 
 struct ℒRadialBasisFunction{F<:Function}
     f::F
 end
 (ℒrbf::ℒRadialBasisFunction)(x, xᵢ) = ℒrbf.f(x, xᵢ)
 
-struct ℒMonomial{F<:Function}
+struct ℒMonomialBasis{Dim,Deg,F<:Function}
     f::F
+    function ℒMonomialBasis(dim::T, deg::T, f) where {T<:Int}
+        if deg < 0
+            throw(ArgumentError("Monomial basis must have non-negative degree"))
+        end
+        return new{dim,deg,typeof(f)}(f)
+    end
 end
-(ℒmon::ℒMonomial)(m, x) = ℒmon.f(m, x)
+function (ℒmon::ℒMonomialBasis{Dim,Deg})(x) where {Dim,Deg}
+    b = ones(_get_underlying_type(x), binomial(Dim + Deg, Dim))
+    ℒmon(b, x)
+    return b
+end
+(m::ℒMonomialBasis)(b, x) = m.f(b, x)
 
 include("polyharmonic_spline.jl")
 include("inverse_multiquadric.jl")
 include("gaussian.jl")
 include("monomial.jl")
-
-function ∂(basis::B, order::T, dim::T) where {T<:Int,B<:AbstractRadialBasis}
-    return ∂(basis, Val(order), dim)
-end
-∂(basis::B, dim::T) where {T<:Int,B} = ∂(basis, Val(1), dim)
-∂²(basis::B, dim::T) where {T<:Int,B} = ∂(basis, Val(2), dim)
 
 # pretty printing
 unicode_order(::Val{1}) = ""

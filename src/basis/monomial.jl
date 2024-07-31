@@ -1,39 +1,100 @@
 """
-    struct MonomialBasis{T<:Int,B<:Function}
+    struct MonomialBasis{Dim,Deg} <: AbstractBasis
 
-Multivariate Monomial basis.
-n ∈ N: length of array, i.e., x ∈ Rⁿ
-deg ∈ N: degree
+`Dim` dimensional monomial basis of order `Deg`.
 """
-struct MonomialBasis{T<:Int,B}
-    n::T
-    deg::T
-    basis!::B
-    function MonomialBasis(n::T, deg::T) where {T<:Int}
+struct MonomialBasis{Dim,Deg,F<:Function} <: AbstractBasis
+    f::F
+    function MonomialBasis(dim::T, deg::T) where {T<:Int}
         if deg < 0
-            basis! = nothing
-        else
-            basis! = build_monomial_basis(n, deg)
+            throw(ArgumentError("Monomial basis must have non-negative degree"))
         end
-        return new{T,typeof(basis!)}(n, deg, basis!)
+        f = _get_monomial_basis(Val(dim), Val(deg))
+        return new{dim,deg,typeof(f)}(f)
     end
 end
 
-function (m::MonomialBasis)(x::AbstractVector{T}) where {T}
-    b = ones(T, binomial(m.n + m.deg, m.n))
-    m.basis!(b, x)
+function (m::MonomialBasis{Dim,Deg})(x) where {Dim,Deg}
+    b = ones(_get_underlying_type(x), binomial(Dim + Deg, Dim))
+    m.f(b, x)
     return b
 end
-(m::MonomialBasis)(b, x) = m.basis!(b, x)
+(m::MonomialBasis)(b, x) = m.f(b, x)
 
-function build_monomial_basis(n::T, deg::T) where {T<:Int}
-    if deg == 0
-        basis! = (b, x) -> b .= one(eltype(x))
-        return basis!
+for Dim in (:1, :2, :3)
+    @eval begin
+        function _get_monomial_basis(::Val{$Dim}, ::Val{0})
+            return function basis!(b, x)
+                b[1] = one(_get_underlying_type(x))
+                return nothing
+            end
+        end
     end
-    e = multiexponents(n + 1, deg)
-    e = map(i -> getindex.(e, i), 1:n)
-    ids = map(j -> map(i -> findall(x -> x >= i, e[j]), 1:deg), 1:n)
+end
+
+function _get_monomial_basis(::Val{1}, ::Val{N}) where {N}
+    return function basis!(b, x)
+        b[1] = one(_get_underlying_type(x))
+        if N > 0
+            for n in 1:N
+                b[n + 1] = only(x)^n
+            end
+        end
+        return nothing
+    end
+end
+
+function _get_monomial_basis(::Val{2}, ::Val{1})
+    return function basis!(b, x)
+        b[1] = one(eltype(x))
+        b[2] = x[1]
+        b[3] = x[2]
+        return nothing
+    end
+end
+
+function _get_monomial_basis(::Val{2}, ::Val{2})
+    return function basis!(b, x)
+        b[1] = one(eltype(x))
+        b[2] = x[1]
+        b[3] = x[2]
+        b[4] = x[1] * x[2]
+        b[5] = x[1] * x[1]
+        b[6] = x[2] * x[2]
+        return nothing
+    end
+end
+
+function _get_monomial_basis(::Val{3}, ::Val{1})
+    return function basis!(b, x)
+        b[1] = one(eltype(x))
+        b[2] = x[1]
+        b[3] = x[2]
+        b[4] = x[3]
+        return nothing
+    end
+end
+
+function _get_monomial_basis(::Val{3}, ::Val{2})
+    return function basis!(b, x)
+        b[1] = one(eltype(x))
+        b[2] = x[1]
+        b[3] = x[2]
+        b[4] = x[3]
+        b[5] = x[1] * x[2]
+        b[6] = x[1] * x[3]
+        b[7] = x[2] * x[3]
+        b[8] = x[1] * x[1]
+        b[9] = x[2] * x[2]
+        b[10] = x[3] * x[3]
+        return nothing
+    end
+end
+
+function _get_monomial_basis(::Val{Dim}, ::Val{Deg}) where {Dim,Deg}
+    e = multiexponents(Dim + 1, Deg)
+    e = map(i -> getindex.(e, i), 1:Dim)
+    ids = map(j -> map(i -> findall(x -> x >= i, e[j]), 1:Deg), 1:Dim)
     return build_monomial_basis(ids)
 end
 
@@ -49,7 +110,6 @@ function build_monomial_basis(ids::Vector{Vector{Vector{T}}}) where {T<:Int}
     return basis!
 end
 
-# pretty printing
-function Base.show(io::IO, pb::MonomialBasis)
-    return print(io, "MonomialBasis, deg=$(pb.deg) in $(pb.n) dimensions")
+function Base.show(io::IO, ::MonomialBasis{Dim,Deg}) where {Dim,Deg}
+    return print(io, "MonomialBasis of degree $(Deg) in $(Dim) dimensions")
 end

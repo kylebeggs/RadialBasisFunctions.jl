@@ -5,7 +5,7 @@ for op in (:+, :-, :*, :/)
 end
 
 for op in (:+, :-, :*, :/)
-    @eval function Base.$op(a::ℒMonomial, b::ℒMonomial)
+    @eval function Base.$op(a::ℒMonomialBasis, b::ℒMonomialBasis)
         function additive_ℒMon(m, x)
             cache = ones(size(m))
             m .= 0

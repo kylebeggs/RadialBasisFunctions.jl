@@ -1,54 +1,183 @@
 using RadialBasisFunctions
-const RBF = RadialBasisFunctions
+import RadialBasisFunctions as RBF
 using StaticArrays
 
-function unordered_approx(A::AbstractVector, B::AbstractVector)
-    length(A) != length(B) && return false
-    b = deepcopy(B)
-    for a in A
-        id = findfirst(x -> x ≈ a, b)
-        isnothing(id) && return false
-        deleteat!(b, id)
-    end
-    return true
+@testset "dim=1, deg=0, vector input" begin
+    x = SVector(2.0)
+
+    m = MonomialBasis(1, 0)
+    @test m isa MonomialBasis
+    @test typeof(m) <: MonomialBasis{1,0}
+
+    # standard evaluation
+    @test all(isapprox.(m(x), [1]))
+
+    # derivatives
+    @test all(isapprox.(RBF.∂(m, 1)(x), [0]))
+    @test all(isapprox.(RBF.∂²(m, 1)(x), [0]))
+    @test all(isapprox.(RBF.∇²(m)(x), [0]))
 end
 
-x = SVector(2.0, 3.0)
+@testset "dim=1, deg=1" begin
+    x = SVector(2.0)
 
-m = MonomialBasis(2, 2)
-@test m isa MonomialBasis
-@test m.n == 2
-@test m.deg == 2
+    m = MonomialBasis(1, 1)
+    @test m isa MonomialBasis
+    @test typeof(m) <: MonomialBasis{1,1}
 
-# standard evaluation
-@test unordered_approx(m(x), [1, 2, 3, 4, 9, 6])
+    # standard evaluation
+    @test all(isapprox.(m(x), [1, 2]))
 
-# derivatives
-dx! = RBF.∂(m, 1, 1)
-dy! = RBF.∂(m, 1, 2)
-d2x! = RBF.∂(m, 2, 1)
-d2y! = RBF.∂(m, 2, 2)
-grad = RBF.∇(m)
-lap! = RBF.∇²(m)
+    # derivatives
+    @test all(isapprox.(RBF.∂(m, 1)(x), [0, 1]))
+    @test all(isapprox.(RBF.∂²(m, 1)(x), [0, 0]))
+    @test all(isapprox.(RBF.∇²(m)(x), [0, 0]))
+end
 
-b = zeros(6)
+@testset "dim=1, deg=2" begin
+    x = SVector(2.0)
 
-dx!(b, x)
-@test unordered_approx(b, [0, 1, 0, 4, 0, 3])
+    m = MonomialBasis(1, 2)
+    @test m isa MonomialBasis
+    @test typeof(m) <: MonomialBasis{1,2}
 
-dy!(b, x)
-@test unordered_approx(b, [0, 0, 1, 0, 6, 2])
+    # standard evaluation
+    @test all(isapprox.(m(x), [1, 2, 4]))
 
-d2x!(b, x)
-@test unordered_approx(b, [0, 0, 0, 2, 0, 0])
+    # derivatives
+    @test all(isapprox.(RBF.∂(m, 1)(x), [0, 1, 4]))
+    @test all(isapprox.(RBF.∂²(m, 1)(x), [0, 0, 2]))
+    @test all(isapprox.(RBF.∇²(m)(x), [0, 0, 2]))
+end
 
-d2y!(b, x)
-@test unordered_approx(b, [0, 0, 0, 0, 2, 0])
+@testset "dim=2, deg=0" begin
+    x = SVector(2.0, 3.0)
 
-lap!(b, x)
-@test unordered_approx(b, [0, 0, 0, 2, 2, 0])
+    m = MonomialBasis(2, 0)
+    @test m isa MonomialBasis
+    @test typeof(m) <: MonomialBasis{2,0}
 
-b = ntuple(x -> zeros(6), length(x))
-grad(b, x)
-@test unordered_approx(b[1], [0, 1, 0, 4, 0, 3])
-@test unordered_approx(b[2], [0, 0, 1, 0, 6, 2])
+    # standard evaluation
+    @test all(isapprox.(m(x), [1]))
+
+    # derivatives
+    @test all(isapprox.(RBF.∂(m, 1)(x), [0]))
+    @test all(isapprox.(RBF.∂(m, 2)(x), [0]))
+    @test all(isapprox.(RBF.∂²(m, 1)(x), [0]))
+    @test all(isapprox.(RBF.∂²(m, 2)(x), [0]))
+    @test all(isapprox.(RBF.∇²(m)(x), [0]))
+end
+
+@testset "dim=2, deg=1" begin
+    x = SVector(2.0, 3.0)
+
+    m = MonomialBasis(2, 1)
+    @test m isa MonomialBasis
+    @test typeof(m) <: MonomialBasis{2,1}
+
+    # standard evaluation
+    @test all(isapprox.(m(x), [1, 2, 3]))
+
+    # derivatives
+    @test all(isapprox.(RBF.∂(m, 1)(x), [0, 1, 0]))
+    @test all(isapprox.(RBF.∂(m, 2)(x), [0, 0, 1]))
+    @test all(isapprox.(RBF.∂²(m, 1)(x), [0, 0, 0]))
+    @test all(isapprox.(RBF.∂²(m, 2)(x), [0, 0, 0]))
+    @test all(isapprox.(RBF.∇²(m)(x), [0, 0, 0]))
+end
+
+@testset "dim=2, deg=2" begin
+    x = SVector(2.0, 3.0)
+
+    m = MonomialBasis(2, 2)
+    @test m isa MonomialBasis
+    @test typeof(m) <: MonomialBasis{2,2}
+
+    # standard evaluation
+    @test all(isapprox.(m(x), [1, 2, 3, 6, 4, 9]))
+
+    # derivatives
+    @test all(isapprox.(RBF.∂(m, 1)(x), [0, 1, 0, 3, 4, 0]))
+    @test all(isapprox.(RBF.∂(m, 2)(x), [0, 0, 1, 2, 0, 6]))
+    @test all(isapprox.(RBF.∂²(m, 1)(x), [0, 0, 0, 0, 2, 0]))
+    @test all(isapprox.(RBF.∂²(m, 2)(x), [0, 0, 0, 0, 0, 2]))
+    @test all(isapprox.(RBF.∇²(m)(x), [0, 0, 0, 0, 2, 2]))
+end
+
+@testset "dim=2, deg=3 - fallback for higher orders" begin
+    x = SVector(2.0, 3.0)
+
+    m = MonomialBasis(2, 3)
+    @test m isa MonomialBasis
+    @test typeof(m) <: MonomialBasis{2,3}
+
+    # standard evaluation
+    @test all(isapprox.(m(x), [8, 12, 4, 18, 6, 2, 27, 9, 3, 1]))
+
+    # derivatives
+    @test all(isapprox.(RBF.∂(m, 1)(x), [12, 12, 4, 9, 3, 1, 0, 0, 0, 0]))
+    @test all(isapprox.(RBF.∂(m, 2)(x), [0, 4, 0, 12, 2, 0, 27, 6, 1, 0]))
+    @test all(isapprox.(RBF.∂²(m, 1)(x), [12, 6, 2, 0, 0, 0, 0, 0, 0, 0]))
+    @test all(isapprox.(RBF.∂²(m, 2)(x), [0, 0, 0, 4, 0, 0, 18, 2, 0, 0]))
+    @test all(isapprox.(RBF.∇²(m)(x), [12, 6, 2, 4, 0, 0, 18, 2, 0, 0]))
+end
+
+@testset "dim=3, deg=0" begin
+    x = SVector(2.0, 3.0, 4.0)
+
+    m = MonomialBasis(3, 0)
+    @test m isa MonomialBasis
+    @test typeof(m) <: MonomialBasis{3,0}
+
+    # standard evaluation
+    @test all(isapprox.(m(x), [1]))
+
+    # derivatives
+    @test all(isapprox.(RBF.∂(m, 1)(x), [0]))
+    @test all(isapprox.(RBF.∂(m, 2)(x), [0]))
+    @test all(isapprox.(RBF.∂(m, 3)(x), [0]))
+    @test all(isapprox.(RBF.∂²(m, 1)(x), [0]))
+    @test all(isapprox.(RBF.∂²(m, 2)(x), [0]))
+    @test all(isapprox.(RBF.∂²(m, 2)(x), [0]))
+    @test all(isapprox.(RBF.∇²(m)(x), [0]))
+end
+
+@testset "dim=3, deg=1" begin
+    x = SVector(2.0, 3.0, 4.0)
+
+    m = MonomialBasis(3, 1)
+    @test m isa MonomialBasis
+    @test typeof(m) <: MonomialBasis{3,1}
+
+    # standard evaluation
+    @test all(isapprox.(m(x), [1, 2, 3, 4]))
+
+    # derivatives
+    @test all(isapprox.(RBF.∂(m, 1)(x), [0, 1, 0, 0]))
+    @test all(isapprox.(RBF.∂(m, 2)(x), [0, 0, 1, 0]))
+    @test all(isapprox.(RBF.∂(m, 3)(x), [0, 0, 0, 1]))
+    @test all(isapprox.(RBF.∂²(m, 1)(x), [0, 0, 0, 0]))
+    @test all(isapprox.(RBF.∂²(m, 2)(x), [0, 0, 0, 0]))
+    @test all(isapprox.(RBF.∂²(m, 2)(x), [0, 0, 0, 0]))
+    @test all(isapprox.(RBF.∇²(m)(x), [0, 0, 0, 0]))
+end
+
+@testset "dim=3, deg=2" begin
+    x = SVector(2.0, 3.0, 4.0)
+
+    m = MonomialBasis(3, 2)
+    @test m isa MonomialBasis
+    @test typeof(m) <: MonomialBasis{3,2}
+
+    # standard evaluation
+    @test all(isapprox.(m(x), [1, 2, 3, 4, 6, 8, 12, 4, 9, 16]))
+
+    # derivatives
+    @test all(isapprox.(RBF.∂(m, 1)(x), [0, 1, 0, 0, 3, 4, 0, 4, 0, 0]))
+    @test all(isapprox.(RBF.∂(m, 2)(x), [0, 0, 1, 0, 2, 0, 4, 0, 6, 0]))
+    @test all(isapprox.(RBF.∂(m, 3)(x), [0, 0, 0, 1, 0, 2, 3, 0, 0, 8]))
+    @test all(isapprox.(RBF.∂²(m, 1)(x), [0, 0, 0, 0, 0, 0, 0, 2, 0, 0]))
+    @test all(isapprox.(RBF.∂²(m, 2)(x), [0, 0, 0, 0, 0, 0, 0, 0, 2, 0]))
+    @test all(isapprox.(RBF.∂²(m, 3)(x), [0, 0, 0, 0, 0, 0, 0, 0, 0, 2]))
+    @test all(isapprox.(RBF.∇²(m)(x), [0, 0, 0, 0, 0, 0, 0, 2, 2, 2]))
+end

@@ -51,5 +51,27 @@ function partial(
     return RadialBasisOperator(ℒ, data, eval_points, basis; k=k, adjl=adjl)
 end
 
+function ∂(basis::AbstractBasis, order::T, dim::T) where {T<:Int}
+    if order == 1
+        return ∂(basis, dim)
+    elseif order == 2
+        return ∂²(basis, dim)
+    else
+        return _higher_order_partial(basis, order, dim)
+        throw(
+            ArgumentError(
+                "Only first and second order derivatives are supported right now. You may use the custom operator.",
+            ),
+        )
+    end
+end
+
+function _higher_order_partial(basis::MonomialBasis, order::T, dim::T) where {T<:Int}
+    return _∂(basis, order, Val(dim))
+end
+function _higher_order_partial(_, _, _)
+    throw(ArgumentError("Higher order partials are not supported for RBFs yet."))
+end
+
 # pretty printing
 print_op(op::Partial) = "∂ⁿf/∂xᵢ (n = $(op.order), i = $(op.dim))"

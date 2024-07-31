@@ -88,3 +88,6 @@ function _find_smallest_dist(data, k)
     end
     return Δ
 end
+
+_get_underlying_type(x::AbstractVector) = eltype(x)
+_get_underlying_type(x::Number) = typeof(x)

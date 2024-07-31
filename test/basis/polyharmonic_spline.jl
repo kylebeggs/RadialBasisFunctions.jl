@@ -1,5 +1,5 @@
 using RadialBasisFunctions
-const RBF = RadialBasisFunctions
+import RadialBasisFunctions as RBF
 using StaticArrays
 
 @testset "Constructors" begin

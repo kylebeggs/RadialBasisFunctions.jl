@@ -1,7 +1,7 @@
 using RadialBasisFunctions
 using StaticArrays
 using Statistics
-using Random
+using HaltonSequences
 
 rsme(test, correct) = sqrt(sum((test - correct) .^ 2) / sum(correct .^ 2))
 mean_percent_error(test, correct) = mean(abs.((test .- correct) ./ correct)) * 100
@@ -13,7 +13,7 @@ d2f_dxx(x) = -16 * sin(4 * x[1]) - 9 * cos(3 * x[1])
 d2f_dyy(x) = -4 * sin(2 * x[2])
 
 N = 10_000
-x = map(x -> SVector{2}(rand(MersenneTwister(x), 2)), 1:N)
+x = SVector{2}.(HaltonPoint(2)[1:N])
 y = f.(x)
 
 @testset "First Derivative Partials" begin

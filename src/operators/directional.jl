@@ -20,11 +20,7 @@ function directional(
     k::T=autoselect_k(data, basis),
     adjl=find_neighbors(data, k),
 ) where {D<:AbstractArray,B<:AbstractRadialBasis,T<:Int}
-    f = ntuple(length(first(data))) do dim
-        return let dim = dim
-            x -> ∂(x, 1, dim)
-        end
-    end
+    f = ntuple(dim -> Base.Fix2(∂, dim), length(first(data)))
     ℒ = Directional(f, v)
     return RadialBasisOperator(ℒ, data, basis; k=k, adjl=adjl)
 end
@@ -42,11 +38,7 @@ function directional(
     k::T=autoselect_k(data, basis),
     adjl=find_neighbors(data, eval_points, k),
 ) where {B<:AbstractRadialBasis,T<:Int}
-    f = ntuple(length(first(data))) do dim
-        return let dim = dim
-            x -> ∂(x, 1, dim)
-        end
-    end
+    f = ntuple(dim -> Base.Fix2(∂, dim), length(first(data)))
     ℒ = Directional(f, v)
     return RadialBasisOperator(ℒ, data, eval_points, basis; k=k, adjl=adjl)
 end

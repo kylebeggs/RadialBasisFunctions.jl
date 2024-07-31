@@ -20,7 +20,7 @@ export MonomialBasis
 include("utils.jl")
 export find_neighbors, reorder_points!
 
-include("linalg/stencil.jl")
+include("solve.jl")
 
 include("operators/operators.jl")
 export RadialBasisOperator, update_weights!
@@ -40,7 +40,7 @@ export Directional, directional
 include("operators/virtual.jl")
 export ∂virtual
 
-include("operators/monomial.jl")
+include("operators/monomial/monomial.jl")
 
 include("operators/operator_combinations.jl")
 
@@ -63,7 +63,7 @@ using PrecompileTools
         basis_funcs = [
             IMQ(1),
             Gaussian(1),
-            PHS(1; poly_deg=-1),
+            PHS(1; poly_deg=0),
             PHS(3; poly_deg=0),
             PHS(5; poly_deg=1),
             PHS(7; poly_deg=2),

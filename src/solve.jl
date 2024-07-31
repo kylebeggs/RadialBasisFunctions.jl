@@ -66,17 +66,20 @@ function _build_stencil!(
 end
 
 function _build_collocation_matrix!(
-    A::Symmetric, data::AbstractVector{D}, basis::B, mon::MonomialBasis, k::K
-) where {D<:AbstractArray,B<:AbstractRadialBasis,K<:Int}
+    A::Symmetric, data::AbstractVector{D}, basis::B, mon::MonomialBasis{Dim,Deg}, k::K
+) where {D<:AbstractArray,B<:AbstractRadialBasis,K<:Int,Dim,Deg}
     # radial basis section
+    AA = parent(A)
+    N = size(A, 2)
     @inbounds for j in 1:k, i in 1:j
-        parent(A)[i, j] = basis(data[i], data[j])
+        AA[i, j] = basis(data[i], data[j])
     end
 
     # monomial augmentation
-    if basis.poly_deg > -1
+    if Deg > -1
         @inbounds for i in 1:k
-            parent(A)[i, (k + 1):end] .= mon(data[i])
+            a = view(AA, i, (k + 1):N)
+            mon(a, data[i])
         end
     end
 

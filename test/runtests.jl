@@ -45,7 +45,7 @@ end
 end
 
 @safetestset "Stencil" begin
-    include("linalg/stencil.jl")
+    include("solve.jl")
 end
 
 @safetestset "Utils" begin
