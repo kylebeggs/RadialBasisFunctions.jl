@@ -50,8 +50,9 @@ export Interpolator
 include("operators/regridding.jl")
 export Regrid, regrid
 
+# Some consts and aliases
 const Δ = ∇² # some people like this notation for the Laplacian
-const DIV0_OFFSET = 1e-8
+const AVOID_NAN = 1e-16
 
 using PrecompileTools
 @setup_workload begin
