@@ -69,7 +69,7 @@ end
 function _build_weights(ℒ::Directional, data, eval_points, adjl, basis)
     v = ℒ.v
     N = length(first(data))
-    @assert length(v) == N || length(v) == length(op) "wrong size for v"
+    @assert length(v) == N || length(v) == length(data) "wrong size for v"
     if length(v) == N
         return mapreduce(+, enumerate(ℒ.ℒ)) do (i, ℒ)
             _build_weights(ℒ, data, eval_points, adjl, basis) * v[i]
