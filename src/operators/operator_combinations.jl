@@ -7,12 +7,7 @@ end
 for op in (:+, :-, :*, :/)
     @eval function Base.$op(a::ℒMonomialBasis, b::ℒMonomialBasis)
         function additive_ℒMon(m, x)
-            cache = ones(size(m))
-            m .= 0
-            a(cache, x)
-            m .+= cache
-            b(cache, x)
-            @. m = Base.$op(m, cache)
+            m .= Base.$op.(a(x), b(x))
             return nothing
         end
     end
@@ -35,16 +30,7 @@ for op in (:+, :-, :*, :/)
         k1 = length(first((op1.adjl)))
         k2 = length(first((op2.adjl)))
         k = k1 > k2 ? k1 : k2
-        ℒ = Base.$op(op1.ℒ, op2.ℒ)
+        ℒ(x) = Base.$op(op1.ℒ(x), op2.ℒ(x))
         return RadialBasisOperator(ℒ, op1.data, op1.basis; k=k, adjl=op1.adjl)
-    end
-end
-
-for op in (:+, :-, :*, :/)
-    @eval function Base.$op(a::ScalarValuedOperator, b::ScalarValuedOperator)
-        order = (a.order..., b.order)
-        dim = (a.dim..., b.dim)
-        f(x) = Base.$op(a.ℒ(x), a.ℒ(x))
-        return Partial(f, order, dim)
     end
 end
