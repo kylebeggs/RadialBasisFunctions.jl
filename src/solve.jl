@@ -1,6 +1,12 @@
-function _build_weights(ℒ, op; nchunks=Threads.nthreads())
+function _build_weights(ℒ, op)
     data = op.data
+    eval_points = op.eval_points
+    adjl = op.adjl
     basis = op.basis
+    return _build_weights(ℒ, data, eval_points, adjl, basis)
+end
+
+function _build_weights(ℒ, data, eval_points, adjl, basis)
     dim = length(first(data)) # dimension of data
 
     # build monomial basis and operator
@@ -8,15 +14,11 @@ function _build_weights(ℒ, op; nchunks=Threads.nthreads())
     ℒmon = ℒ(mon)
     ℒrbf = ℒ(basis)
 
-    return _build_weights(op, ℒrbf, ℒmon, mon; nchunks=nchunks)
+    return _build_weights(data, eval_points, adjl, basis, ℒrbf, ℒmon, mon)
 end
 
-function _build_weights(op, ℒrbf, ℒmon, mon; nchunks=Threads.nthreads())
-    data = op.data
-    eval_points = op.eval_points
-    adjl = op.adjl
-    basis = op.basis
-
+function _build_weights(data, eval_points, adjl, basis, ℒrbf, ℒmon, mon)
+    nchunks = Threads.nthreads()
     TD = eltype(first(data))
     dim = length(first(data)) # dimension of data
     nmon = binomial(dim + basis.poly_deg, basis.poly_deg)
@@ -66,8 +68,8 @@ function _build_stencil!(
 end
 
 function _build_collocation_matrix!(
-    A::Symmetric, data::AbstractVector{D}, basis::B, mon::MonomialBasis{Dim,Deg}, k::K
-) where {D<:AbstractArray,B<:AbstractRadialBasis,K<:Int,Dim,Deg}
+    A::Symmetric, data::AbstractVector, basis::B, mon::MonomialBasis{Dim,Deg}, k::K
+) where {B<:AbstractRadialBasis,K<:Int,Dim,Deg}
     # radial basis section
     AA = parent(A)
     N = size(A, 2)

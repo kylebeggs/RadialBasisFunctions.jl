@@ -9,11 +9,11 @@ end
 
 # convienience constructors
 function laplacian(
-    data::AbstractVector{D},
+    data::AbstractVector,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
     adjl=find_neighbors(data, k),
-) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+) where {T<:Int,B<:AbstractRadialBasis}
     ℒ = Laplacian(∇²)
     return RadialBasisOperator(ℒ, data, basis; k=k, adjl=adjl)
 end
