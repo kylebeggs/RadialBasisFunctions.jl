@@ -26,6 +26,27 @@ for op in (:+, :-)
     end
 end
 
+function Base.:∘(a::ℒRadialBasisFunction, b::ℒRadialBasisFunction)
+    additive_ℒRBF(x, xᵢ) = (a.f ∘ b.f)(x, xᵢ)
+    return ℒRadialBasisFunction(additive_ℒRBF)
+end
+
+function Base.:∘(a::ℒMonomialBasis{Dim,Deg}, b::ℒMonomialBasis{Dim,Deg}) where {Dim,Deg}
+    function additive_ℒMon(m, x)
+        a(m, x)
+        b(m, x)
+        return nothing
+    end
+    return ℒMonomialBasis(Dim, Deg, additive_ℒMon)
+end
+
+function Base.:∘(op1::RadialBasisOperator, op2::RadialBasisOperator)
+    _check_compatible(op1, op2)
+    k = _update_stencil(op1, op2)
+    ℒ = op1.ℒ.ℒ ∘ op2.ℒ.ℒ
+    return RadialBasisOperator(ℒ, op1.data, op1.basis; k=k, adjl=op1.adjl)
+end
+
 function _check_compatible(op1::RadialBasisOperator, op2::RadialBasisOperator)
     if !all(op1.data .≈ op2.data)
         throw(
