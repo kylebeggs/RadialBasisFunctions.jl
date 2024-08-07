@@ -16,6 +16,7 @@ export AbstractPHS, PHS, PHS1, PHS3, PHS5, PHS7
 export IMQ
 export Gaussian
 export MonomialBasis
+export degree, dim
 
 include("utils.jl")
 export find_neighbors, reorder_points!
@@ -42,7 +43,7 @@ export ∂virtual
 
 include("operators/monomial/monomial.jl")
 
-include("operators/operator_combinations.jl")
+include("operators/operator_algebra.jl")
 
 include("interpolation.jl")
 export Interpolator
@@ -52,7 +53,7 @@ export Regrid, regrid
 
 # Some consts and aliases
 const Δ = ∇² # some people like this notation for the Laplacian
-const AVOID_NAN = 1e-16
+const AVOID_INF = 1e-16
 
 using PrecompileTools
 @setup_workload begin

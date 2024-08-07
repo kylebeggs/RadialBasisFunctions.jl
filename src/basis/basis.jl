@@ -29,6 +29,9 @@ function (ℒmon::ℒMonomialBasis{Dim,Deg})(x) where {Dim,Deg}
 end
 (m::ℒMonomialBasis)(b, x) = m.f(b, x)
 
+degree(::ℒMonomialBasis{Dim,Deg}) where {Dim,Deg} = Deg
+dim(::ℒMonomialBasis{Dim,Deg}) where {Dim,Deg} = Dim
+
 include("polyharmonic_spline.jl")
 include("inverse_multiquadric.jl")
 include("gaussian.jl")
