@@ -15,10 +15,9 @@ end
 function ∇²(m::MonomialBasis{Dim,Deg}) where {Dim,Deg}
     ∂² = ntuple(dim -> ∂(m, 2, dim), Dim)
     function basis!(b, x)
-        cache = ones(size(b))
-        b .= 0
+        cache = ones(eltype(x), size(b))
+        b .= zero(eltype(x))
         for ∂²! in ∂²
-            # use mapreduce here instead?
             ∂²!(cache, x)
             b .+= cache
         end
@@ -34,8 +33,8 @@ end
 
 function build_monomial_basis(ids::Vector{Vector{Vector{T}}}, c::Vector{T}) where {T<:Int}
     function basis!(db::AbstractVector{B}, x::AbstractVector) where {B}
-        db .= 1
-        # TODO flatten loop - why does it allocate here
+        db .= one(eltype(x))
+        # TODO optimize - allocations
         @views @inbounds for i in eachindex(ids), j in eachindex(ids[i])
             db[ids[i][j]] *= x[i]
         end

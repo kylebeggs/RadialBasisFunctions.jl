@@ -7,6 +7,7 @@ struct Regrid
     ℒ
     Regrid() = new(identity)
 end
+(op::Regrid)(x) = op.ℒ(x)
 
 # convienience constructors
 """

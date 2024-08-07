@@ -16,13 +16,13 @@ end
 Builds a `RadialBasisOperator` where the operator is the partial derivative, `Partial`, of `order` with respect to `dim`.
 """
 function partial(
-    data::AbstractVector{D},
+    data::AbstractVector,
     order::T,
     dim::T,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
     adjl=find_neighbors(data, k),
-) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
+) where {T<:Int,B<:AbstractRadialBasis}
     f = let o = order, dim = dim
         x -> ∂(x, o, dim)
     end

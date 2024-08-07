@@ -14,11 +14,11 @@ end
 Builds a `RadialBasisOperator` where the operator is the gradient, `Gradient`.
 """
 function gradient(
-    data::AbstractVector{D},
+    data::AbstractVector,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
     adjl=find_neighbors(data, k),
-) where {D<:AbstractArray,B<:AbstractRadialBasis,T<:Int}
+) where {B<:AbstractRadialBasis,T<:Int}
     f = ntuple(dim -> Base.Fix2(∂, dim), length(first(data)))
     ℒ = Gradient(f)
     return RadialBasisOperator(ℒ, data, basis; k=k, adjl=adjl)

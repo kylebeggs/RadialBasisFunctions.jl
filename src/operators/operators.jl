@@ -2,6 +2,8 @@ abstract type AbstractOperator end
 abstract type ScalarValuedOperator <: AbstractOperator end
 abstract type VectorValuedOperator <: AbstractOperator end
 
+(op::AbstractOperator)(x) = op.ℒ(x)
+
 """
     struct RadialBasisOperator
 
@@ -16,24 +18,30 @@ struct RadialBasisOperator{L,W,D,C,A,B<:AbstractRadialBasis}
     basis::B
     valid_cache::Base.RefValue{Bool}
     function RadialBasisOperator(
-        ℒ::L, weights::W, data::D, eval_points::C, adjl::A, basis::B
+        ℒ::L,
+        weights::W,
+        data::D,
+        eval_points::C,
+        adjl::A,
+        basis::B,
+        cache_status::Bool=false,
     ) where {L,W,D,C,A,B<:AbstractRadialBasis}
-        return new{L,W,D,C,A,B}(ℒ, weights, data, eval_points, adjl, basis, Ref(false))
+        return new{L,W,D,C,A,B}(
+            ℒ, weights, data, eval_points, adjl, basis, Ref(cache_status)
+        )
     end
 end
 
 # convienience constructors
 function RadialBasisOperator(
     ℒ,
-    data::AbstractVector{D},
+    data::AbstractVector,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
     adjl=find_neighbors(data, k),
-) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
-    Na = length(adjl)
-    Nd = length(data)
-    weights = spzeros(eltype(D), Na, Nd)
-    return RadialBasisOperator(ℒ, weights, data, data, adjl, basis)
+) where {T<:Int,B<:AbstractRadialBasis}
+    weights = _build_weights(ℒ, data, data, adjl, basis)
+    return RadialBasisOperator(ℒ, weights, data, data, adjl, basis, true)
 end
 
 function RadialBasisOperator(
@@ -44,23 +52,19 @@ function RadialBasisOperator(
     k::T=autoselect_k(data, basis),
     adjl=find_neighbors(data, eval_points, k),
 ) where {TD,TE,T<:Int,B<:AbstractRadialBasis}
-    Na = length(adjl)
-    Nd = length(data)
-    weights = spzeros(eltype(TD), Na, Nd)
-    return RadialBasisOperator(ℒ, weights, data, eval_points, adjl, basis)
+    weights = _build_weights(ℒ, data, eval_points, adjl, basis)
+    return RadialBasisOperator(ℒ, weights, data, eval_points, adjl, basis, true)
 end
 
 function RadialBasisOperator(
     ℒ::VectorValuedOperator,
-    data::AbstractVector{D},
+    data::AbstractVector,
     basis::B=PHS(3; poly_deg=2);
     k::T=autoselect_k(data, basis),
     adjl=find_neighbors(data, k),
-) where {D<:AbstractArray,T<:Int,B<:AbstractRadialBasis}
-    TD = eltype(D)
-    N = length(adjl)
-    weights = ntuple(_ -> _allocate_weights(TD, N, N, k), length(ℒ.ℒ))
-    return RadialBasisOperator(ℒ, weights, data, data, adjl, basis)
+) where {T<:Int,B<:AbstractRadialBasis}
+    weights = ntuple(i -> _build_weights(ℒ.ℒ[i], data, data, adjl, basis), length(ℒ.ℒ))
+    return RadialBasisOperator(ℒ, weights, data, data, adjl, basis, true)
 end
 
 function RadialBasisOperator(
@@ -71,15 +75,16 @@ function RadialBasisOperator(
     k::T=autoselect_k(data, basis),
     adjl=find_neighbors(data, eval_points, k),
 ) where {TD,TE,T<:Int,B<:AbstractRadialBasis}
-    Na = length(adjl)
-    Nd = length(data)
-    weights = ntuple(_ -> _allocate_weights(eltype(TD), Na, Nd, k), length(ℒ.ℒ))
-    return RadialBasisOperator(ℒ, weights, data, eval_points, adjl, basis)
+    weights = ntuple(length(ℒ.ℒ)) do i
+        _build_weights(ℒ.ℒ[i], data, eval_points, adjl, basis)
+    end
+    return RadialBasisOperator(ℒ, weights, data, eval_points, adjl, basis, true)
 end
 
 # extend Base methods
 Base.length(op::RadialBasisOperator) = length(op.adjl)
 Base.size(op::RadialBasisOperator) = size(op.weights)
+Base.size(op::RadialBasisOperator, dim::Int) = size(op.weights, dim)
 function Base.size(op::RadialBasisOperator{<:VectorValuedOperator})
     return ntuple(i -> size(op.weights[i]), embeddim(op))
 end

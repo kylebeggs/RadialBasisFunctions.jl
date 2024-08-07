@@ -44,6 +44,10 @@ end
     include("operators/virtual.jl")
 end
 
+@safetestset "Operator Algebra" begin
+    include("operators/operator_algebra.jl")
+end
+
 @safetestset "Stencil" begin
     include("solve.jl")
 end
